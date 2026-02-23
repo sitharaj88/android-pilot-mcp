@@ -1,0 +1,88 @@
+---
+title: Android Pilot MCP
+description: 39 MCP tools for Android development — build, device management, debugging, scaffolding, APK analysis, intents, and SDK management.
+template: splash
+hero:
+  tagline: A Model Context Protocol server that gives AI-powered editors direct access to Android development tools. Build, debug, deploy — all through natural language.
+  actions:
+    - text: Get Started
+      link: /android-pilot-mcp/getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/sitharaj88/android-pilot-mcp
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## What Can It Do?
+
+<CardGrid stagger>
+  <Card title="Build & Lint" icon="setting">
+    Gradle builds, task runner, dependency trees, project clean, and Android Lint
+    analysis — all from your editor.
+  </Card>
+  <Card title="Device Management" icon="laptop">
+    List, create, start, and stop emulators. Install APKs, launch apps, manage
+    permissions, WiFi ADB, and file transfers.
+  </Card>
+  <Card title="Debugging" icon="magnifier">
+    Logcat filtering, screenshots, screen recording, UI hierarchy dumps, device
+    info, and shell commands.
+  </Card>
+  <Card title="Scaffolding" icon="document">
+    Create full Android projects with Compose or XML. Scaffold activities,
+    fragments, and Compose screens from templates.
+  </Card>
+  <Card title="APK Analysis" icon="information">
+    Inspect APK size, versions, SDK targets, DEX references, file listings,
+    manifests, and permissions.
+  </Card>
+  <Card title="Intents & Deep Links" icon="rocket">
+    Send intents, broadcast events, and test deep link URIs on connected
+    devices.
+  </Card>
+  <Card title="SDK Management" icon="list-format">
+    List installed and available SDK packages. Install platforms, system images,
+    and build tools.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+```bash
+npx android-pilot-mcp
+```
+
+Add to your Claude Code config (`.mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "android-pilot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "android-pilot-mcp"]
+    }
+  }
+}
+```
+
+## Works With
+
+<CardGrid>
+  <Card title="Claude Code" icon="star">
+    Anthropic's official CLI with full MCP support.
+  </Card>
+  <Card title="Cursor" icon="star">
+    AI-first code editor with MCP integration.
+  </Card>
+  <Card title="Windsurf" icon="star">
+    AI-powered editor with built-in MCP support.
+  </Card>
+  <Card title="Any MCP Client" icon="star">
+    Any editor that supports the stdio MCP transport.
+  </Card>
+</CardGrid>

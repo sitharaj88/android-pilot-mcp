@@ -1,0 +1,36 @@
+---
+title: Start Emulator
+description: Start an Android emulator by AVD name with boot options.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Start an emulator and wait for it to boot. Supports cold boot, headless mode, and data wipe options.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `avdName` | `string` | Yes | — | Name of the AVD to start |
+| `coldBoot` | `boolean` | No | `false` | Force cold boot (ignore snapshots) |
+| `noWindow` | `boolean` | No | `false` | Run headless (no GUI window) |
+| `wipeData` | `boolean` | No | `false` | Reset to factory state |
+
+## Examples
+
+> Start the TestDevice emulator
+
+> Start the emulator with cold boot
+
+> Start the emulator in headless mode with wiped data
+
+<Aside type="tip">
+  Use headless mode (`noWindow`) for CI/CD environments where no display is available.
+</Aside>
+
+## Related Tools
+
+- [Stop Emulator](/android-pilot-mcp/tools/device/emulator-stop/) — Stop a running emulator
+- [Device List](/android-pilot-mcp/tools/device/device-list/) — Verify the emulator started

@@ -1,0 +1,26 @@
+---
+title: List App Permissions
+description: List all permissions for an installed app, showing granted and denied status.
+---
+
+## Overview
+
+View every permission declared by an app and whether it's currently granted or denied.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `packageName` | `string` | Yes | — | Application package name |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> List all permissions for com.example.myapp
+
+> Show which permissions are granted for my app
+
+## Related Tools
+
+- [App Permission](/android-pilot-mcp/tools/device/app-permission/) — Grant or revoke specific permissions
+- [APK Permissions](/android-pilot-mcp/tools/analyze/apk-permissions/) — Check permissions in the APK file

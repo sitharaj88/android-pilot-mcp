@@ -1,0 +1,36 @@
+---
+title: Send Broadcast
+description: Send an Android broadcast intent.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Send a broadcast intent to trigger broadcast receivers on the device.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `action` | `string` | Yes | — | Broadcast action (e.g., `com.example.MY_ACTION`) |
+| `component` | `string` | No | — | Target component for explicit broadcast |
+| `extras` | `object` | No | — | String extras as key-value pairs |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Send broadcast com.example.REFRESH on my device
+
+> Send broadcast com.example.CONFIG_UPDATE with extras version=2
+
+> Send broadcast com.example.NOTIFY to component com.example.myapp/.MyReceiver
+
+<Aside type="caution">
+  Since Android 8.0 (API 26), implicit broadcasts are restricted. Use explicit broadcasts (with component) for most cases.
+</Aside>
+
+## Related Tools
+
+- [Send Intent](/android-pilot-mcp/tools/intent/intent-send/) — Start activities
+- [Test Deep Link](/android-pilot-mcp/tools/intent/deeplink-test/) — Test URI-based navigation

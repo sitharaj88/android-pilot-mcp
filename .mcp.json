@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "android-pilot": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["build/index.js"]
+    }
+  }
+}

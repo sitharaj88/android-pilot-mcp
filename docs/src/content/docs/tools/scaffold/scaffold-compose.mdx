@@ -1,0 +1,29 @@
+---
+title: Scaffold Compose Screen
+description: Generate a Jetpack Compose screen file with composable function and preview.
+---
+
+## Overview
+
+Generate a Compose screen with a main composable function, preview function, and optional ViewModel.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectDir` | `string` | Yes | — | Absolute path to the Android project root |
+| `screenName` | `string` | Yes | — | Screen name (e.g., `Profile` creates `ProfileScreen.kt`) |
+| `packageName` | `string` | Yes | — | Package name |
+| `module` | `string` | No | `app` | Module name |
+| `includeViewModel` | `boolean` | No | `false` | Also generate a ViewModel file |
+
+## Examples
+
+> Create a ProfileScreen composable with package com.example.myapp
+
+> Scaffold a SettingsScreen with a ViewModel
+
+## Related Tools
+
+- [Scaffold Activity](/android-pilot-mcp/tools/scaffold/scaffold-activity/) — Generate activities
+- [Scaffold Fragment](/android-pilot-mcp/tools/scaffold/scaffold-fragment/) — Generate fragments

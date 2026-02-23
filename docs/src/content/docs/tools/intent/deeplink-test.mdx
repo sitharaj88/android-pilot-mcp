@@ -1,0 +1,36 @@
+---
+title: Test Deep Link
+description: Test a deep link URI on a connected Android device.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Open a deep link URI on a device using ACTION_VIEW. Test both custom scheme links and App Links.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `uri` | `string` | Yes | — | Deep link URI (e.g., `myapp://profile/123` or `https://example.com/path`) |
+| `packageName` | `string` | No | — | Restrict to a specific app. If omitted, Android chooser may appear. |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Test deep link myapp://profile/123 on my device
+
+> Test https://example.com/product/456 in com.example.myapp
+
+> Test deep link myapp://settings/notifications
+
+<Aside type="tip">
+  Specify the package name to bypass the Android chooser dialog and open directly in your app.
+</Aside>
+
+## Related Tools
+
+- [Send Intent](/android-pilot-mcp/tools/intent/intent-send/) — Send more complex intents
+- [Logcat](/android-pilot-mcp/tools/debug/logcat/) — Check deep link routing in logs
+- [Screenshot](/android-pilot-mcp/tools/debug/screenshot/) — Verify the correct screen opened

@@ -1,0 +1,35 @@
+---
+title: Android Lint
+description: Run Android Lint analysis on a project to find warnings, errors, and suggestions.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Run Android Lint to analyze your code for potential bugs, performance issues, security vulnerabilities, and accessibility problems. Returns results with file locations.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectDir` | `string` | Yes | — | Absolute path to the Android project root |
+| `module` | `string` | No | `:app` | Module to lint |
+| `fatal` | `boolean` | No | `false` | If true, report as error when fatal lint issues are found |
+
+## Examples
+
+> Run lint on my project
+
+> Run lint and treat fatal issues as errors
+
+> Run lint on the :feature module
+
+<Aside type="caution">
+  Use the `fatal` flag in CI pipelines to fail the build on critical lint issues.
+</Aside>
+
+## Related Tools
+
+- [Gradle Build](/android-pilot-mcp/tools/build/gradle-build/) — Build after fixing lint issues
+- [Gradle Task](/android-pilot-mcp/tools/build/gradle-task/) — Run custom lint tasks

@@ -1,0 +1,249 @@
+---
+title: "Scaffolding, Intents & SDK"
+description: Prompts for creating projects, scaffolding components, testing intents and deep links, and managing the Android SDK.
+sidebar:
+  order: 7
+---
+
+import { Tabs, TabItem, Steps, Aside } from "@astrojs/starlight/components";
+
+## Project Creation
+
+### Jetpack Compose Project (default)
+
+> Create a new Android project called MyApp with package com.example.myapp in ~/Projects
+
+Creates a complete project with Kotlin, Gradle KTS, and Jetpack Compose.
+
+### XML Layout Project
+
+> Create an XML-based Android project called MyApp with package com.example.myapp
+
+### Custom SDK Versions
+
+> Create a project called LegacyApp with minSdk 21 and targetSdk 34
+
+### Custom Kotlin and AGP Versions
+
+> Create a project with Kotlin 2.1.0 and AGP version 8.7.3
+
+### Full Custom Project
+
+> Create an Android project called MyApp with package com.example.myapp, minSdk 24, targetSdk 35, Compose enabled, in ~/Projects
+
+<Aside type="tip">
+  After creating a project, immediately build it to verify everything is set up correctly: "Build my MyApp project"
+</Aside>
+
+---
+
+## Component Scaffolding
+
+### Activities
+
+<Tabs>
+  <TabItem label="With layout">
+    > Create a DetailActivity in my project with package com.example.myapp
+
+    Creates both the Activity Kotlin file and a corresponding XML layout.
+  </TabItem>
+  <TabItem label="Without layout">
+    > Scaffold a SettingsActivity without a layout file
+
+    Creates only the Activity Kotlin file — useful for Compose-based activities.
+  </TabItem>
+</Tabs>
+
+### Fragments
+
+<Tabs>
+  <TabItem label="With layout">
+    > Create a ProfileFragment with package com.example.myapp
+
+    Creates the Fragment Kotlin file and XML layout.
+  </TabItem>
+  <TabItem label="Without layout">
+    > Create a HomeFragment without a layout
+
+    Fragment only, no XML.
+  </TabItem>
+</Tabs>
+
+### Compose Screens
+
+<Tabs>
+  <TabItem label="Basic screen">
+    > Create a ProfileScreen composable with package com.example.myapp
+
+    Generates a screen file with a composable function and preview.
+  </TabItem>
+  <TabItem label="With ViewModel">
+    > Scaffold a SettingsScreen with a ViewModel
+
+    Generates both the screen composable and a ViewModel class.
+  </TabItem>
+</Tabs>
+
+### Scaffold Multiple Components for a Feature
+
+<Steps>
+1. Create the screen
+   > Create a ProductDetailScreen composable with ViewModel
+
+2. Create a list screen
+   > Create a ProductListScreen composable with ViewModel
+
+3. Create a data Activity if needed
+   > Create a ProductActivity with package com.example.myapp
+</Steps>
+
+---
+
+## Intent Testing
+
+### Common Intent Actions
+
+| What you want | Prompt |
+|---------------|--------|
+| Open URL in browser | "Open https://example.com on my device" |
+| Open Settings | "Send intent with action android.settings.SETTINGS on my device" |
+| Open WiFi settings | "Send intent with action android.settings.WIFI_SETTINGS" |
+| Open app settings | "Send intent with action android.settings.APPLICATION_DETAILS_SETTINGS with data package:com.example.myapp" |
+| Dial a number | "Send intent with action android.intent.action.DIAL and data tel:+1234567890" |
+| Send email | "Send intent with action android.intent.action.SENDTO and data mailto:test@example.com" |
+| Open camera | "Send intent with action android.media.action.IMAGE_CAPTURE" |
+| Share text | "Send intent with action android.intent.action.SEND with extra android.intent.extra.TEXT=Hello" |
+
+### Custom App Intents
+
+> Send intent with action com.example.myapp.REFRESH on my device
+
+> Send intent VIEW with data https://example.com/product/123 to component com.example.myapp/.DeepLinkActivity
+
+### Intents with Extras
+
+> Send intent with action com.example.MY_ACTION with extras: key1=value1 and key2=value2
+
+### Intents with Flags
+
+> Send intent VIEW with data https://example.com and flag 0x10000000
+
+The flag `0x10000000` is `FLAG_ACTIVITY_NEW_TASK`.
+
+<Aside type="note">
+  Intent extras are sent as strings. If your app expects other types, you may need to handle type conversion in your BroadcastReceiver or Activity.
+</Aside>
+
+---
+
+## Deep Link Testing
+
+### Custom Scheme Deep Links
+
+> Test deep link myapp://profile/123 on my device
+
+> Test deep link myapp://settings/notifications
+
+> Test deep link myapp://product?id=456&ref=home
+
+### App Links (HTTPS)
+
+> Test deep link https://example.com/product/456 on my device
+
+> Test https://example.com/user/profile in com.example.myapp
+
+### Restrict to Specific App
+
+> Test deep link myapp://checkout in com.example.myapp
+
+By specifying the package name, you bypass the Android chooser dialog.
+
+### Verify Deep Link Routing
+
+<Steps>
+1. Clear logcat first
+   > Clear the logcat buffer
+
+2. Test the deep link
+   > Test deep link myapp://profile/123 on my device
+
+3. Check logs to verify routing
+   > Show logcat for tag DeepLinkHandler
+
+4. Take a screenshot to verify the correct screen
+   > Take a screenshot
+</Steps>
+
+<Aside type="tip">
+  Test both your custom scheme links (`myapp://`) and your App Links (`https://yourdomain.com/`) to make sure both work correctly.
+</Aside>
+
+---
+
+## Broadcast Testing
+
+### Send Custom Broadcasts
+
+> Send broadcast com.example.myapp.REFRESH on my device
+
+> Send broadcast com.example.DATA_SYNC
+
+### Broadcasts with Extras
+
+> Send broadcast com.example.CONFIG_UPDATE with extras: version=2 and force=true
+
+### Target Specific Components
+
+> Send broadcast com.example.NOTIFY to component com.example.myapp/.MyReceiver
+
+<Aside type="caution">
+  Starting with Android 8.0 (API 26), implicit broadcasts are restricted. Most custom broadcasts need to be explicit (targeting a specific component) or registered dynamically.
+</Aside>
+
+---
+
+## SDK Management
+
+### Check What's Installed
+
+> List my installed SDK packages
+
+Shows all installed platforms, build tools, system images, and other components.
+
+### Find Available Packages
+
+> Show all available SDK packages
+
+Lists everything you can install — platforms, system images, build tools, sources, and extras.
+
+### Install Individual Packages
+
+> Install Android 35 platform
+
+> Install system-images;android-35;google_apis;arm64-v8a
+
+> Install build-tools;35.0.0
+
+### Set Up for a New API Level
+
+<Steps>
+1. Install the platform
+   > Install platforms;android-35
+
+2. Install a system image for emulators
+   > Install system-images;android-35;google_apis;arm64-v8a
+
+3. Install matching build tools
+   > Install build-tools;35.0.0
+
+4. Create an emulator with the new API
+   > Create an Android 35 emulator called API35_Test
+</Steps>
+
+### Install Multiple Packages at Once
+
+> Install platforms;android-34, system-images;android-34;google_apis;arm64-v8a, and build-tools;34.0.0
+
+<Aside type="tip">
+  When setting up a new development environment, install the platform + system image + build tools together to save time.
+</Aside>

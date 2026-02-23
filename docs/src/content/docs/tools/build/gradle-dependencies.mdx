@@ -1,0 +1,35 @@
+---
+title: Gradle Dependencies
+description: Show the dependency tree for an Android project module.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Display the dependency tree for a module, helping you understand what libraries your project uses and identify version conflicts.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectDir` | `string` | Yes | — | Absolute path to the Android project root |
+| `module` | `string` | No | `:app` | Module to show dependencies for |
+| `configuration` | `string` | No | — | Configuration to show (e.g., `debugCompileClasspath`) |
+
+## Examples
+
+> Show the dependency tree for my app
+
+> Show debugCompileClasspath dependencies for the :app module
+
+> Show releaseRuntimeClasspath dependencies
+
+<Aside type="tip">
+  Use a specific configuration like `debugCompileClasspath` to narrow down the output — the full tree can be very long.
+</Aside>
+
+## Related Tools
+
+- [Gradle Build](/android-pilot-mcp/tools/build/gradle-build/) — Build the project
+- [Gradle Task](/android-pilot-mcp/tools/build/gradle-task/) — Run dependency-related tasks

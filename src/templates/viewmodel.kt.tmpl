@@ -1,0 +1,15 @@
+package {{PACKAGE_NAME}}
+
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+data class {{SCREEN_NAME}}UiState(
+    val isLoading: Boolean = false,
+)
+
+class {{SCREEN_NAME}}ViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow({{SCREEN_NAME}}UiState())
+    val uiState: StateFlow<{{SCREEN_NAME}}UiState> = _uiState.asStateFlow()
+}

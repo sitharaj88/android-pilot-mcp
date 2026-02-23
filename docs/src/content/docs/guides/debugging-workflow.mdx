@@ -1,0 +1,76 @@
+---
+title: Debugging Workflow
+description: Debug Android apps using logcat, screenshots, UI dumps, and screen recording.
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+
+## Logcat Filtering
+
+Logcat is your primary debugging tool. Android Pilot gives you powerful filtering options.
+
+### By Priority Level
+
+<Tabs>
+  <TabItem label="Errors only">
+    > Show me the last 100 error logs from my device
+  </TabItem>
+  <TabItem label="Warnings+">
+    > Show warning and above logs
+  </TabItem>
+  <TabItem label="All logs">
+    > Show the last 200 logcat lines
+  </TabItem>
+</Tabs>
+
+### By Tag
+
+> Show logcat for tag "MyApp" with at least Info priority
+
+### By Search String
+
+> Search logcat for "NullPointerException"
+
+> Search logcat for "OutOfMemoryError" in the last 500 lines
+
+### By Time
+
+> Show logs since 2025-01-15 10:30:00
+
+### Combined Filters
+
+> Show error logs for tag "CrashHandler" containing "fatal" from the last 200 lines
+
+<Aside type="tip">
+  Clear logcat before reproducing a bug to reduce noise: "Clear the logcat buffer"
+</Aside>
+
+## Visual Debugging
+
+### Screenshots
+
+> Take a screenshot of my device
+
+> Capture a screenshot and save it to ~/Desktop/bug-screenshot.png
+
+### Screen Recording
+
+> Record my device screen for 30 seconds
+
+Record while reproducing a bug, then review the video.
+
+### UI Hierarchy
+
+> Dump the UI hierarchy of the current screen
+
+This returns XML showing every view, its bounds, text, and accessibility info. Useful for finding views that aren't visible or debugging layout issues.
+
+## Shell Commands for Debugging
+
+> Run "dumpsys meminfo com.example.myapp" on the device
+
+> Run "dumpsys activity top" to see the current activity
+
+> Run "dumpsys cpuinfo" to check CPU usage

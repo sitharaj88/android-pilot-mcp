@@ -1,0 +1,58 @@
+---
+title: Prerequisites
+description: Required software and environment setup for Android Pilot MCP.
+sidebar:
+  order: 3
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Required Software
+
+| Software | Version | Purpose |
+|----------|---------|---------|
+| **Node.js** | 20 or later | Runtime for the MCP server |
+| **Android SDK** | Latest | Platform tools (adb), emulator, command-line tools |
+| **Java JDK** | 17 or later | Required for Gradle builds |
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ANDROID_HOME` | Yes* | Path to your Android SDK installation |
+| `JAVA_HOME` | Recommended | Path to your JDK installation (needed for Gradle builds) |
+
+\* If `ANDROID_HOME` is not set, the server also checks `ANDROID_SDK_ROOT` and the macOS default path `~/Library/Android/sdk`.
+
+<Aside type="tip">
+  On macOS with Android Studio, `ANDROID_HOME` is typically `~/Library/Android/sdk`. Add to your shell profile:
+  ```bash
+  export ANDROID_HOME=~/Library/Android/sdk
+  export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator
+  ```
+</Aside>
+
+## Android SDK Components
+
+Ensure these SDK components are installed via Android Studio's SDK Manager or command line:
+
+- **Platform Tools** — includes `adb`
+- **Emulator** — for creating and running AVDs
+- **Command-line Tools** — includes `sdkmanager`, `avdmanager`
+- **At least one platform** — e.g., `platforms;android-35`
+
+## Verify Setup
+
+```bash
+# Check Node.js
+node --version  # Should be >= 20
+
+# Check ADB
+adb --version
+
+# Check Java
+java --version  # Should be >= 17
+
+# Check Android SDK
+echo $ANDROID_HOME
+```

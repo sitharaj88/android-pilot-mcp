@@ -1,0 +1,26 @@
+---
+title: Clear App Data
+description: Clear all data for an installed app, equivalent to clearing storage in settings.
+---
+
+## Overview
+
+Wipe all app data including databases, shared preferences, and cache. The app will behave as if freshly installed.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `packageName` | `string` | Yes | — | Application package name |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Clear all data for com.example.myapp
+
+> Reset my app to fresh state
+
+## Related Tools
+
+- [Stop App](/android-pilot-mcp/tools/device/app-stop/) — Stop without clearing data
+- [Launch App](/android-pilot-mcp/tools/device/app-launch/) — Relaunch after clearing

@@ -1,0 +1,35 @@
+---
+title: Gradle Task
+description: Run an arbitrary Gradle task in an Android project.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Run any Gradle task — tests, custom builds, code generation, or anything else your build script supports.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectDir` | `string` | Yes | — | Absolute path to the Android project root |
+| `task` | `string` | Yes | — | Gradle task to run (e.g., `test`, `lint`, `:app:connectedAndroidTest`) |
+| `args` | `string[]` | No | — | Additional Gradle arguments (e.g., `['--info', '-Pfoo=bar']`) |
+
+## Examples
+
+> Run tests for my Android project
+
+> Run the assembleRelease Gradle task
+
+> Run the bundleRelease task with --info argument
+
+<Aside type="tip">
+  Use "List all Gradle tasks" first to see what's available in your project.
+</Aside>
+
+## Related Tools
+
+- [List Gradle Tasks](/android-pilot-mcp/tools/build/gradle-list-tasks/) — See available tasks
+- [Gradle Build](/android-pilot-mcp/tools/build/gradle-build/) — Standard debug/release builds

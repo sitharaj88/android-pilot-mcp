@@ -1,0 +1,40 @@
+---
+title: Create Project
+description: Create a new Android project with Kotlin and Gradle KTS.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Scaffold a complete Android project with Kotlin and Gradle KTS. Supports Jetpack Compose or XML layouts.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectName` | `string` | Yes | — | Project name (also the directory name) |
+| `packageName` | `string` | Yes | — | Java/Kotlin package name (e.g., `com.example.myapp`) |
+| `parentDir` | `string` | Yes | — | Parent directory where the project folder will be created |
+| `useCompose` | `boolean` | No | `true` | Use Jetpack Compose instead of XML layouts |
+| `minSdk` | `number` | No | `24` | Minimum Android SDK version |
+| `targetSdk` | `number` | No | `35` | Target Android SDK version |
+| `kotlinVersion` | `string` | No | `2.1.0` | Kotlin version |
+| `agpVersion` | `string` | No | `8.7.3` | Android Gradle Plugin version |
+
+## Examples
+
+> Create a new Android project called MyApp with package com.example.myapp
+
+> Create an XML-based project called LegacyApp with minSdk 21
+
+> Create a project with Kotlin 2.1.0 and targetSdk 35
+
+<Aside type="tip">
+  After creating a project, build it immediately to verify everything is configured correctly.
+</Aside>
+
+## Related Tools
+
+- [Gradle Build](/android-pilot-mcp/tools/build/gradle-build/) — Build the new project
+- [Scaffold Activity](/android-pilot-mcp/tools/scaffold/scaffold-activity/) — Add activities to the project

@@ -1,0 +1,57 @@
+---
+title: Your First Project
+description: Create, build, install, and run an Android app using Android Pilot MCP.
+sidebar:
+  order: 1
+---
+
+import { Steps, Aside } from "@astrojs/starlight/components";
+
+This guide walks you through creating a complete Android app using only natural language prompts.
+
+## End-to-End Workflow
+
+<Steps>
+1. **Create a project**
+
+   > Create a new Android project called HelloWorld with package name com.example.helloworld
+
+   This creates a Jetpack Compose project with all the standard Gradle configuration.
+
+2. **Build the project**
+
+   > Build my HelloWorld Android project
+
+   This runs a debug build and produces an APK.
+
+3. **Start an emulator**
+
+   > Start the Pixel_6_API_35 emulator
+
+   Or create one first if you don't have any:
+
+   > Create an Android 35 emulator called TestDevice and start it
+
+4. **Install the APK**
+
+   > Install the HelloWorld debug APK on the emulator
+
+5. **Launch the app**
+
+   > Launch com.example.helloworld
+
+6. **Take a screenshot**
+
+   > Take a screenshot of the device
+
+   Verify your app is running correctly.
+</Steps>
+
+<Aside type="tip">
+  You don't need to remember exact commands or paths. Just describe what you want in natural language and the AI editor will figure out which tools to use.
+</Aside>
+
+## What's Next?
+
+- [Debugging Workflow](/android-pilot-mcp/guides/debugging-workflow/) — Learn to debug with logcat, screenshots, and UI dumps.
+- [Emulator Management](/android-pilot-mcp/guides/emulator-management/) — Master emulator creation and management.

@@ -1,0 +1,39 @@
+---
+title: WiFi ADB
+description: Connect to and disconnect from Android devices over WiFi ADB.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Switch from USB to wireless ADB debugging. The device must be connected via USB first.
+
+## Connect Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `deviceId` | `string` | No | — | USB device serial to switch to WiFi |
+| `port` | `number` | No | `5555` | TCP port for WiFi ADB |
+
+## Disconnect Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `address` | `string` | No | — | Address to disconnect (e.g., `192.168.1.5:5555`). Disconnects all if omitted. |
+
+## Examples
+
+> Connect to my device over WiFi ADB
+
+> Disconnect WiFi ADB
+
+> Disconnect WiFi ADB for 192.168.1.5:5555
+
+<Aside type="caution">
+  Both the device and computer must be on the same WiFi network.
+</Aside>
+
+## Related Tools
+
+- [Device List](/android-pilot-mcp/tools/device/device-list/) — Verify the wireless connection

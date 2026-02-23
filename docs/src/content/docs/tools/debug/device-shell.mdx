@@ -1,0 +1,38 @@
+---
+title: Device Shell
+description: Execute an arbitrary ADB shell command on a connected Android device.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Run any shell command on a connected device. Useful for checking system state, running dumpsys commands, and other advanced operations.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `command` | `string` | Yes | — | Shell command to execute on the device |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Run "dumpsys meminfo com.example.myapp" on the device
+
+> Run "pm list packages -3" to list third-party apps
+
+> Run "getprop ro.build.version.release" to get Android version
+
+> Run "df -h" to check disk space
+
+> Run "dumpsys battery" to check battery stats
+
+<Aside type="caution">
+  Shell commands run with the same permissions as ADB. Be careful with destructive commands.
+</Aside>
+
+## Related Tools
+
+- [Logcat](/android-pilot-mcp/tools/debug/logcat/) — Read application logs
+- [Device Info](/android-pilot-mcp/tools/debug/device-info/) — Structured device information

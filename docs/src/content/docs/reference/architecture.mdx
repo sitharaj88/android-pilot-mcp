@@ -1,0 +1,60 @@
+---
+title: Architecture
+description: Technical architecture of Android Pilot MCP — protocol, transport, project structure, and security.
+sidebar:
+  order: 2
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## MCP Protocol
+
+Android Pilot MCP implements the [Model Context Protocol](https://modelcontextprotocol.io/) — a standard for connecting AI editors to external tools.
+
+### How It Works
+
+1. Your AI editor (Claude Code, Cursor, etc.) starts the MCP server as a subprocess
+2. Communication happens over **stdio** (stdin/stdout)
+3. The editor sends JSON-RPC requests describing which tool to call
+4. The server executes the tool (runs adb, Gradle, etc.) and returns results
+5. The editor uses the results to answer your question or complete the task
+
+### Transport
+
+Android Pilot uses **stdio transport** — the simplest and most compatible option. The server reads from stdin and writes to stdout.
+
+## Project Structure
+
+```
+android-pilot-mcp/
+├── src/
+│   ├── index.ts          # Entry point, MCP server setup
+│   ├── tools/            # Tool implementations
+│   │   ├── build.ts      # Gradle build tools
+│   │   ├── device.ts     # Device management tools
+│   │   ├── debug.ts      # Debugging tools
+│   │   ├── scaffold.ts   # Code scaffolding tools
+│   │   ├── analyze.ts    # APK analysis tools
+│   │   ├── intent.ts     # Intent and deep link tools
+│   │   └── sdk.ts        # SDK management tools
+│   ├── utils/            # Shared utilities
+│   │   ├── android-sdk.ts  # SDK path detection
+│   │   ├── exec.ts       # Command execution
+│   │   └── validation.ts # Input validation
+│   └── templates/        # Scaffolding templates
+├── tests/                # Vitest test suite
+├── docs/                 # This documentation site
+└── build/                # Compiled output
+```
+
+## Security Model
+
+<Aside type="caution">
+  Android Pilot MCP executes real commands on your system. Only use it with trusted AI editors.
+</Aside>
+
+- All tool inputs are validated using [Zod](https://zod.dev/) schemas
+- File paths are validated to prevent path traversal
+- Shell commands are executed with proper escaping
+- The server runs with the same permissions as your user account
+- No network access is required — all communication is local via stdio

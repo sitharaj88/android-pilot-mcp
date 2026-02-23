@@ -1,0 +1,31 @@
+---
+title: APK Permissions
+description: List all permissions declared in an APK file.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Extract and list every permission declared in an APK's manifest. Useful for auditing before release.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `apkPath` | `string` | Yes | — | Absolute path to the APK file |
+
+## Examples
+
+> List permissions in my release APK
+
+> Check what permissions my debug APK requests
+
+<Aside type="caution">
+  Third-party libraries can add unexpected permissions. Always review before publishing.
+</Aside>
+
+## Related Tools
+
+- [Analyze APK](/android-pilot-mcp/tools/analyze/apk-analyze/) — Full APK analysis
+- [List App Permissions](/android-pilot-mcp/tools/device/app-permissions-list/) — Check permissions on an installed app

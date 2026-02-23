@@ -1,0 +1,43 @@
+---
+title: File Transfer
+description: Push files to and pull files from a connected Android device.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Transfer files between your computer and an Android device. Push test data to the device or pull databases and logs for analysis.
+
+## Push Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `localPath` | `string` | Yes | — | Absolute path to the local file |
+| `remotePath` | `string` | Yes | — | Destination path on the device |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Pull Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `remotePath` | `string` | Yes | — | Path on the device |
+| `localPath` | `string` | Yes | — | Local destination path |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Push test.json to /sdcard/Download/ on the device
+
+> Pull /sdcard/Download/log.txt from the device to ./debug/
+
+> Pull the database from /data/data/com.example.myapp/databases/app.db
+
+<Aside type="note">
+  Paths under `/data/data/` require the app to be debuggable or the device to be rooted.
+</Aside>
+
+## Related Tools
+
+- [Device Shell](/android-pilot-mcp/tools/debug/device-shell/) — Run commands on the device
+- [Device List](/android-pilot-mcp/tools/device/device-list/) — Find device serial numbers

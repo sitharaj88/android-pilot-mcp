@@ -1,0 +1,8 @@
+node_modules/
+/build/
+coverage/
+*.tsbuildinfo
+.DS_Store
+docs/dist/
+docs/.astro/
+docs/package-lock.json

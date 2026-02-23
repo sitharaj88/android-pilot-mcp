@@ -1,0 +1,36 @@
+---
+title: App Permission
+description: Grant or revoke a runtime permission for an app.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Manage runtime permissions for an installed app. Grant permissions to skip dialogs during testing, or revoke them to test permission-denied flows.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `packageName` | `string` | Yes | — | Application package name |
+| `permission` | `string` | Yes | — | Full permission name (e.g., `android.permission.CAMERA`) |
+| `action` | `"grant" \| "revoke"` | Yes | — | Whether to grant or revoke |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Grant camera permission to com.example.myapp
+
+> Revoke location permission from com.example.myapp
+
+> Grant android.permission.RECORD_AUDIO to com.example.myapp
+
+<Aside type="tip">
+  Common permissions: `android.permission.CAMERA`, `android.permission.ACCESS_FINE_LOCATION`, `android.permission.RECORD_AUDIO`, `android.permission.READ_EXTERNAL_STORAGE`.
+</Aside>
+
+## Related Tools
+
+- [List Permissions](/android-pilot-mcp/tools/device/app-permissions-list/) — See current permission state
+- [Clear App Data](/android-pilot-mcp/tools/device/app-clear-data/) — Reset "Don't ask again" state

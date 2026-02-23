@@ -1,0 +1,25 @@
+---
+title: Stop Emulator
+description: Stop a running Android emulator.
+---
+
+## Overview
+
+Gracefully stop a running emulator by its device ID.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `deviceId` | `string` | Yes | — | Device serial (e.g., `emulator-5554`). Use `device_list` to find it. |
+
+## Examples
+
+> Stop the running emulator
+
+> Stop emulator-5554
+
+## Related Tools
+
+- [Device List](/android-pilot-mcp/tools/device/device-list/) — Find the device ID
+- [Start Emulator](/android-pilot-mcp/tools/device/emulator-start/) — Start an emulator

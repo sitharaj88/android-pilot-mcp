@@ -1,0 +1,42 @@
+---
+title: Logcat
+description: Read and filter Android logcat output, or clear the logcat buffer.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Read Android logcat with powerful filtering by tag, priority, time, and search string. Also supports clearing the buffer.
+
+## Read Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `lines` | `number` | No | `100` | Maximum number of recent log lines |
+| `tag` | `string` | No | — | Filter by log tag (e.g., `MyApp`) |
+| `priority` | `"V" \| "D" \| "I" \| "W" \| "E" \| "F"` | No | — | Minimum log priority level |
+| `since` | `string` | No | — | Only logs since this time (e.g., `2025-01-15 10:30:00.000`) |
+| `grep` | `string` | No | — | Filter lines containing this string (case-insensitive) |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Show the last 100 error logs from my device
+
+> Show logcat for tag MyApp with Warning priority
+
+> Search logcat for NullPointerException
+
+> Show logs since 2025-01-15 10:30:00
+
+> Clear the logcat buffer
+
+<Aside type="tip">
+  Clear logcat before reproducing a bug to reduce noise and make it easier to find relevant errors.
+</Aside>
+
+## Related Tools
+
+- [Screenshot](/android-pilot-mcp/tools/debug/screenshot/) — Capture visual state alongside logs
+- [Device Shell](/android-pilot-mcp/tools/debug/device-shell/) — Run `dumpsys` commands for deeper debugging

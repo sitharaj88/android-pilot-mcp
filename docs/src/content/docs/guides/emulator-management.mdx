@@ -1,0 +1,83 @@
+---
+title: Emulator Management
+description: Create, configure, and manage Android emulators for development and testing.
+sidebar:
+  order: 3
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+## Creating Emulators
+
+### Standard Emulator
+
+> Create an Android 35 emulator called Pixel6_API35
+
+### Custom Device Profile
+
+> Create an emulator called Pixel7Pro_API34 with a Pixel 7 Pro device profile and API 34
+
+### Available System Images
+
+First, check what's available:
+
+> List available SDK packages
+
+Then install a system image if needed:
+
+> Install system-images;android-35;google_apis;arm64-v8a
+
+## Starting and Stopping
+
+### Basic Start
+
+> Start the Pixel6_API35 emulator
+
+### Cold Boot
+
+> Start the emulator with a cold boot
+
+Cold boot ignores any saved snapshot and boots from scratch. Useful when the emulator is in a bad state.
+
+### Headless Mode
+
+> Start the emulator in headless mode (no window)
+
+Perfect for CI/CD environments.
+
+### Wiping Data
+
+> Start the emulator and wipe all data
+
+Resets the emulator to factory state.
+
+### Stopping
+
+> Stop the running emulator
+
+## WiFi ADB
+
+Connect to a physical device wirelessly:
+
+<Steps>
+1. Connect your device via USB first
+2. > Connect to my device over WiFi ADB
+3. Unplug the USB cable
+4. Your device stays connected over WiFi
+</Steps>
+
+To disconnect:
+
+> Disconnect WiFi ADB
+
+<Aside type="caution">
+  WiFi ADB requires the device and computer to be on the same network. The device must be initially connected via USB.
+</Aside>
+
+## CI/CD Setup
+
+For headless testing in CI pipelines:
+
+> Create an emulator called CI_Test with API 35 and start it headless with cold boot and wiped data
+
+This creates a clean, reproducible test environment.

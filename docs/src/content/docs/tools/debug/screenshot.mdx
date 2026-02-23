@@ -1,0 +1,28 @@
+---
+title: Screenshot
+description: Capture a screenshot from a connected Android device.
+---
+
+## Overview
+
+Take a screenshot of the device screen, returned as a base64-encoded PNG. Optionally save to a local file.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `savePath` | `string` | No | — | Local path to save the screenshot file |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Take a screenshot of my device
+
+> Capture a screenshot and save to ~/Desktop/screen.png
+
+> Take a screenshot and save to ./screenshots/login-screen.png
+
+## Related Tools
+
+- [Screen Record](/android-pilot-mcp/tools/debug/screen-record/) — Record video instead
+- [UI Dump](/android-pilot-mcp/tools/debug/ui-dump/) — Get the view hierarchy alongside the screenshot

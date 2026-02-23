@@ -1,0 +1,74 @@
+---
+title: Contributing
+description: How to contribute to Android Pilot MCP — development setup, coding standards, and adding new tools.
+sidebar:
+  order: 3
+---
+
+import { Steps, Aside } from "@astrojs/starlight/components";
+
+## Development Setup
+
+<Steps>
+1. Fork and clone the repository:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/android-pilot-mcp.git
+   cd android-pilot-mcp
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the project:
+   ```bash
+   npm run build
+   ```
+
+4. Run tests:
+   ```bash
+   npm test
+   ```
+</Steps>
+
+## Project Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run build` | Compile TypeScript and copy templates |
+| `npm run dev` | Watch mode for development |
+| `npm test` | Run tests with Vitest |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format code with Prettier |
+| `npm run typecheck` | Type check without emitting |
+| `npm run check` | Run typecheck + lint + format check |
+
+## Adding a New Tool
+
+<Steps>
+1. **Define the tool** in the appropriate file under `src/tools/`. Follow existing patterns for parameter schemas using Zod.
+
+2. **Register the tool** in `src/index.ts` by adding it to the tool list.
+
+3. **Add tests** in the `tests/` directory. All tools should have unit tests.
+
+4. **Update documentation** — add a new MDX page in `docs/src/content/docs/tools/`.
+
+5. **Run the full check suite**:
+   ```bash
+   npm run check && npm test
+   ```
+</Steps>
+
+## Coding Standards
+
+- TypeScript strict mode
+- ESLint + Prettier for formatting
+- All exports must have JSDoc comments
+- Use Zod for input validation
+- Prefer `async/await` over callbacks
+
+<Aside type="tip">
+  Pre-commit hooks (via Husky) automatically run ESLint and Prettier on staged files.
+</Aside>

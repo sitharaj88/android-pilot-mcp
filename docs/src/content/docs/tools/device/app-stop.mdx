@@ -1,0 +1,26 @@
+---
+title: Stop App
+description: Force stop an application on a connected Android device.
+---
+
+## Overview
+
+Force stop a running application. Equivalent to swiping it away from recents.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `packageName` | `string` | Yes | — | Application package name to stop |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Force stop com.example.myapp
+
+> Stop my running app
+
+## Related Tools
+
+- [Launch App](/android-pilot-mcp/tools/device/app-launch/) — Restart the app
+- [Clear App Data](/android-pilot-mcp/tools/device/app-clear-data/) — Clear data and stop

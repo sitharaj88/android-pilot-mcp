@@ -1,0 +1,35 @@
+---
+title: Screen Record
+description: Record the device screen as an MP4 video.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Record the device screen and save it as an MP4 file locally. Useful for capturing bug reproductions and creating demos.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `savePath` | `string` | Yes | — | Local path to save the MP4 recording |
+| `duration` | `number` | No | `10` | Recording duration in seconds (max 180) |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Record my device screen for 30 seconds
+
+> Record a 10-second video and save to ./recording.mp4
+
+> Record the screen for 60 seconds and save to ~/Desktop/demo.mp4
+
+<Aside type="note">
+  Maximum recording duration is 180 seconds (3 minutes).
+</Aside>
+
+## Related Tools
+
+- [Screenshot](/android-pilot-mcp/tools/debug/screenshot/) — Single frame capture
+- [Logcat](/android-pilot-mcp/tools/debug/logcat/) — Capture logs while recording

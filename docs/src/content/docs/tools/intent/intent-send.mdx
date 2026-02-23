@@ -1,0 +1,40 @@
+---
+title: Send Intent
+description: Send an Android intent to start an activity with action, data, component, and extras.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Send an intent to start an activity on a connected device. Supports actions, data URIs, component targeting, string extras, and flags.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `action` | `string` | Yes | — | Intent action (e.g., `android.intent.action.VIEW`) |
+| `data` | `string` | No | — | Intent data URI (e.g., `https://example.com`) |
+| `component` | `string` | No | — | Target component (e.g., `com.example/.MainActivity`) |
+| `extras` | `object` | No | — | String extras as key-value pairs |
+| `flags` | `string[]` | No | — | Intent flags (e.g., `['0x10000000']`) |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Open https://example.com on my device
+
+> Send intent with action android.settings.SETTINGS
+
+> Send intent VIEW with data tel:+1234567890
+
+> Send intent with extras key1=value1 to com.example.myapp
+
+<Aside type="note">
+  Extras are sent as strings. Your app must handle type conversion if needed.
+</Aside>
+
+## Related Tools
+
+- [Send Broadcast](/android-pilot-mcp/tools/intent/broadcast-send/) — Send broadcast intents
+- [Test Deep Link](/android-pilot-mcp/tools/intent/deeplink-test/) — Simplified deep link testing

@@ -1,0 +1,66 @@
+---
+title: Environment
+description: Environment variables, SDK detection, and tool paths for Android Pilot MCP.
+sidebar:
+  order: 1
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## SDK Detection
+
+Android Pilot MCP searches for the Android SDK in this order:
+
+1. `ANDROID_HOME` environment variable
+2. `ANDROID_SDK_ROOT` environment variable
+3. macOS default: `~/Library/Android/sdk`
+
+## Tool Paths
+
+The following tools are resolved from the SDK:
+
+| Tool | Path |
+|------|------|
+| `adb` | `$ANDROID_HOME/platform-tools/adb` |
+| `emulator` | `$ANDROID_HOME/emulator/emulator` |
+| `sdkmanager` | `$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager` |
+| `avdmanager` | `$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager` |
+
+## Environment Variables
+
+| Variable | Purpose |
+|----------|---------|
+| `ANDROID_HOME` | Primary SDK location |
+| `ANDROID_SDK_ROOT` | Fallback SDK location (deprecated) |
+| `JAVA_HOME` | JDK location for Gradle builds |
+
+<Aside type="caution">
+  If `JAVA_HOME` is not set, Gradle will use the system default Java. Ensure this is JDK 17 or later.
+</Aside>
+
+## Troubleshooting
+
+### "adb not found"
+
+Ensure `ANDROID_HOME` is set and `platform-tools` is installed:
+
+```bash
+export ANDROID_HOME=~/Library/Android/sdk
+$ANDROID_HOME/platform-tools/adb version
+```
+
+### "emulator not found"
+
+Install the emulator package:
+
+```bash
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "emulator"
+```
+
+### Gradle build fails with "No JDK found"
+
+Set `JAVA_HOME` to your JDK 17+ installation:
+
+```bash
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+```

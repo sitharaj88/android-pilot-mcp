@@ -1,0 +1,84 @@
+---
+title: Configuration
+description: Configure Android Pilot MCP with Claude Code, Cursor, Windsurf, and other MCP clients.
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+
+## Editor Setup
+
+<Tabs>
+  <TabItem label="Claude Code">
+    Add to your project's `.mcp.json` or global `~/.claude/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "android-pilot": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "android-pilot-mcp"]
+        }
+      }
+    }
+    ```
+
+    Or if installed globally:
+
+    ```json
+    {
+      "mcpServers": {
+        "android-pilot": {
+          "type": "stdio",
+          "command": "android-pilot-mcp"
+        }
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="Cursor">
+    Open Cursor Settings > MCP and add a new server, or edit `~/.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "android-pilot": {
+          "command": "npx",
+          "args": ["-y", "android-pilot-mcp"]
+        }
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="Windsurf">
+    Open Windsurf Settings > MCP and add:
+
+    ```json
+    {
+      "mcpServers": {
+        "android-pilot": {
+          "command": "npx",
+          "args": ["-y", "android-pilot-mcp"]
+        }
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="Other Clients">
+    Any MCP client that supports stdio transport can use this server. Point it at `android-pilot-mcp` or `npx -y android-pilot-mcp`.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Project-level `.mcp.json` files are recommended so every team member gets the same tools automatically.
+</Aside>
+
+## Verify Connection
+
+After configuring, ask your AI editor:
+
+> List my connected Android devices
+
+If the server is running correctly, you'll see a list of connected devices (or an empty list if none are connected).

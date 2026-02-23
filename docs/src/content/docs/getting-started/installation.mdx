@@ -1,0 +1,65 @@
+---
+title: Installation
+description: Install Android Pilot MCP via npm, npx, or from source.
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem, Steps } from "@astrojs/starlight/components";
+
+## Install
+
+<Tabs>
+  <TabItem label="npx (recommended)">
+    No installation needed — run directly:
+    ```bash
+    npx android-pilot-mcp
+    ```
+  </TabItem>
+  <TabItem label="npm global">
+    Install globally for repeated use:
+    ```bash
+    npm install -g android-pilot-mcp
+    ```
+    Then run:
+    ```bash
+    android-pilot-mcp
+    ```
+  </TabItem>
+  <TabItem label="From source">
+    <Steps>
+      1. Clone the repository:
+         ```bash
+         git clone https://github.com/sitharaj88/android-pilot-mcp.git
+         cd android-pilot-mcp
+         ```
+      2. Install dependencies:
+         ```bash
+         npm install
+         ```
+      3. Build the project:
+         ```bash
+         npm run build
+         ```
+      4. Run the server:
+         ```bash
+         npm start
+         ```
+    </Steps>
+  </TabItem>
+</Tabs>
+
+## Verify Installation
+
+After installing, verify the server starts correctly:
+
+```bash
+npx android-pilot-mcp
+```
+
+The server communicates via stdio and will wait for MCP client connections. You won't see any output — that's expected. Configure your editor to connect to it.
+
+## Next Steps
+
+- [Configure your editor](/android-pilot-mcp/getting-started/configuration/) to connect to the MCP server.
+- Check the [prerequisites](/android-pilot-mcp/getting-started/prerequisites/) for Android SDK and Java setup.

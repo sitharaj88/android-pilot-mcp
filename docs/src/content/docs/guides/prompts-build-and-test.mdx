@@ -1,0 +1,201 @@
+---
+title: "Build, Test & Analyze"
+description: Prompts for building, testing, linting, and analyzing Android projects — from simple builds to full release workflows.
+sidebar:
+  order: 5
+---
+
+import { Tabs, TabItem, Steps, Aside } from "@astrojs/starlight/components";
+
+## Build Workflows
+
+### Basic Builds
+
+<Tabs>
+  <TabItem label="Debug">
+    > Build my Android project
+
+    Runs `./gradlew assembleDebug` on your project.
+  </TabItem>
+  <TabItem label="Release">
+    > Build my app in release mode
+
+    Runs `./gradlew assembleRelease`. Make sure your signing config is set up.
+  </TabItem>
+  <TabItem label="Specific module">
+    > Build the :feature module in debug mode
+
+    Targets a specific module instead of the whole project.
+  </TabItem>
+</Tabs>
+
+### Build with Debugging
+
+When a build fails and you need more details:
+
+> Build my project with stacktrace enabled
+
+This adds `--stacktrace` to the Gradle command, giving you the full error trace.
+
+### Clean and Rebuild
+
+When things get stuck or you want a fresh start:
+
+> Clean my Android project
+
+Then:
+
+> Build my Android project
+
+Or ask for both in sequence:
+
+> Clean and rebuild my Android project
+
+### Custom Gradle Tasks
+
+Run any Gradle task — not just builds:
+
+> Run the assembleRelease Gradle task
+
+> Run the bundleRelease task for my project
+
+> Run the test task with --info argument
+
+> Run connectedAndroidTest on my project
+
+<Aside type="tip">
+  Not sure what tasks are available? Ask: "List all Gradle tasks in my project"
+</Aside>
+
+---
+
+## Dependency Management
+
+### View the Dependency Tree
+
+> Show the dependency tree for my app
+
+This shows the full tree for the `:app` module's default configuration.
+
+### Check Specific Configurations
+
+> Show debugCompileClasspath dependencies for the :app module
+
+> Show releaseRuntimeClasspath dependencies
+
+### Identify Conflicts
+
+> Show dependencies for my app and highlight any version conflicts
+
+<Aside type="note">
+  The dependency tree can be very long. Ask your AI editor to summarize it or look for specific libraries.
+</Aside>
+
+---
+
+## Lint & Code Quality
+
+### Run Lint
+
+> Run Android Lint on my project
+
+This runs lint on the `:app` module and returns all warnings, errors, and suggestions with file locations.
+
+### Treat Fatal Issues as Errors
+
+> Run lint and treat fatal issues as errors
+
+Use this in CI or before releases to catch critical problems.
+
+### Lint Specific Modules
+
+> Run lint on the :feature module
+
+### Combine Lint + Build
+
+> Run lint on my project, then build if there are no errors
+
+---
+
+## APK Analysis
+
+### Quick Summary
+
+> Analyze my debug APK
+
+Returns size, version name/code, min/target/compile SDK, and method/field reference counts.
+
+### Full Inspection
+
+> Show full APK analysis with manifest for my release APK
+
+Includes the full file listing and AndroidManifest.xml contents.
+
+### Check Permissions Before Release
+
+> List all permissions in my release APK
+
+Review what permissions your app is requesting. Unexpected permissions could come from dependencies.
+
+<Aside type="caution">
+  Always check APK permissions before publishing. Third-party libraries can add permissions you don't expect.
+</Aside>
+
+### Analyze a Specific APK
+
+> Analyze the APK at ./app/build/outputs/apk/release/app-release.apk
+
+---
+
+## Multi-Step Workflows
+
+### Pre-Release Quality Check
+
+<Steps>
+1. Clean the project
+   > Clean my Android project
+
+2. Build release APK
+   > Build my app in release mode
+
+3. Run lint
+   > Run lint and treat fatal issues as errors
+
+4. Analyze the APK
+   > Analyze my release APK with full details
+
+5. Check permissions
+   > List permissions in my release APK
+</Steps>
+
+### Full CI Workflow
+
+> Clean my project, run tests, build release, run lint, and analyze the APK
+
+Your AI editor will chain these tools together automatically.
+
+### Debug a Build Failure
+
+<Steps>
+1. Clean first
+   > Clean my Android project
+
+2. Rebuild with stacktrace
+   > Build my project with stacktrace enabled
+
+3. Check dependencies if it's a resolution issue
+   > Show the dependency tree for my app
+
+4. Check for lint issues
+   > Run lint on my project
+</Steps>
+
+### Compare Debug vs Release
+
+> Analyze my debug APK
+
+Then:
+
+> Analyze my release APK
+
+Compare sizes, method counts, and permissions between variants.

@@ -1,0 +1,34 @@
+---
+title: Analyze APK
+description: Analyze an APK file for size, version, SDK targets, and DEX references.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Inspect an APK to see its size, version info, SDK targets, method/field reference counts, and optionally the full file listing and manifest.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `apkPath` | `string` | Yes | — | Absolute path to the APK file |
+| `detail` | `"summary" \| "full"` | No | `summary` | Level of detail |
+
+## Examples
+
+> Analyze my debug APK
+
+> Show full APK analysis with manifest for my release APK
+
+> Analyze the APK at ./app/build/outputs/apk/debug/app-debug.apk
+
+<Aside type="tip">
+  Use `full` detail to inspect the AndroidManifest.xml and see all files inside the APK.
+</Aside>
+
+## Related Tools
+
+- [APK Permissions](/android-pilot-mcp/tools/analyze/apk-permissions/) — Check declared permissions
+- [Gradle Build](/android-pilot-mcp/tools/build/gradle-build/) — Build the APK first

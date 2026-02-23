@@ -1,0 +1,36 @@
+---
+title: Install APK
+description: Install an APK file on a connected Android device or emulator.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Install an APK on a device or emulator. Supports reinstalling while keeping app data and auto-granting permissions.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `apkPath` | `string` | Yes | — | Absolute path to the APK file |
+| `deviceId` | `string` | No | — | Target device serial (omit if only one device is connected) |
+| `reinstall` | `boolean` | No | `false` | Reinstall keeping existing data |
+| `grantPermissions` | `boolean` | No | `true` | Auto-grant all runtime permissions |
+
+## Examples
+
+> Install my debug APK on the device
+
+> Install the APK at ./app/build/outputs/apk/debug/app-debug.apk
+
+> Reinstall the app keeping its data
+
+<Aside type="tip">
+  Permissions are auto-granted by default. Set `grantPermissions` to false to test permission request flows.
+</Aside>
+
+## Related Tools
+
+- [Launch App](/android-pilot-mcp/tools/device/app-launch/) — Launch after installing
+- [Gradle Build](/android-pilot-mcp/tools/build/gradle-build/) — Build the APK first

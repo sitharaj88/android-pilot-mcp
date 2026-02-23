@@ -1,0 +1,380 @@
+---
+title: "Devices, Emulators & Debugging"
+description: Prompts for managing devices, emulators, permissions, logcat, screenshots, and advanced debugging workflows.
+sidebar:
+  order: 6
+---
+
+import { Tabs, TabItem, Steps, Aside } from "@astrojs/starlight/components";
+
+## Device Discovery
+
+### List Connected Devices
+
+> List my connected Android devices
+
+Shows all physical devices and running emulators with their serial numbers and status.
+
+### Get Device Details
+
+> Get info about my connected device
+
+Returns model, manufacturer, Android version, API level, screen density, resolution, and more.
+
+### Quick Device Checks
+
+> Run "getprop ro.build.version.release" on my device
+
+> Run "df -h /data" to check available storage
+
+> Run "cat /proc/meminfo" to see memory info
+
+---
+
+## Emulator Lifecycle
+
+### Create an Emulator
+
+<Tabs>
+  <TabItem label="Standard">
+    > Create an Android 35 emulator called TestDevice
+  </TabItem>
+  <TabItem label="Custom profile">
+    > Create an emulator called Pixel7_API34 with a Pixel 7 Pro device profile and API 34
+  </TabItem>
+  <TabItem label="Overwrite existing">
+    > Create an emulator called TestDevice with API 35, overwriting if it exists
+  </TabItem>
+</Tabs>
+
+### Start with Options
+
+<Tabs>
+  <TabItem label="Normal">
+    > Start the TestDevice emulator
+  </TabItem>
+  <TabItem label="Cold boot">
+    > Start the emulator with cold boot
+
+    Ignores saved snapshots — useful when the emulator is in a bad state.
+  </TabItem>
+  <TabItem label="Headless">
+    > Start the emulator in headless mode
+
+    No GUI window — perfect for CI/CD.
+  </TabItem>
+  <TabItem label="Wipe data">
+    > Start the emulator and wipe all data
+
+    Factory reset before starting.
+  </TabItem>
+</Tabs>
+
+### Stop an Emulator
+
+> Stop the running emulator
+
+> Stop emulator-5554
+
+### Multi-Device Testing
+
+<Steps>
+1. Create two emulators for different API levels
+   > Create an Android 28 emulator called API28_Test
+
+   > Create an Android 35 emulator called API35_Test
+
+2. Start the first one and test
+   > Start the API28_Test emulator
+
+3. After testing, stop and switch
+   > Stop the running emulator
+
+   > Start the API35_Test emulator
+</Steps>
+
+---
+
+## App Installation & Management
+
+### Install
+
+> Install my debug APK on the device
+
+> Install the APK at ./app/build/outputs/apk/debug/app-debug.apk
+
+### Reinstall (keep data)
+
+> Reinstall the APK keeping existing data
+
+Useful for testing upgrades without losing app state.
+
+### Launch
+
+> Launch com.example.myapp
+
+> Launch the DetailActivity of com.example.myapp
+
+### Stop and Clear
+
+> Force stop com.example.myapp
+
+> Clear all data for com.example.myapp
+
+This is equivalent to "Clear Storage" in Android Settings.
+
+### Full Install-to-Screenshot Cycle
+
+<Steps>
+1. Build the project
+   > Build my Android project
+
+2. Install the APK
+   > Install my debug APK
+
+3. Launch the app
+   > Launch com.example.myapp
+
+4. Take a screenshot to verify
+   > Take a screenshot of my device
+</Steps>
+
+---
+
+## Permission Management
+
+### List Permissions
+
+> List all permissions for com.example.myapp
+
+Shows every permission with its granted/denied status.
+
+### Grant Permissions
+
+> Grant camera permission to com.example.myapp
+
+> Grant android.permission.ACCESS_FINE_LOCATION to com.example.myapp
+
+> Grant android.permission.RECORD_AUDIO to com.example.myapp
+
+> Grant android.permission.READ_EXTERNAL_STORAGE to com.example.myapp
+
+### Revoke for Testing
+
+> Revoke camera permission from com.example.myapp
+
+> Revoke all location permissions from com.example.myapp
+
+<Aside type="tip">
+  Revoking permissions is great for testing permission-denied flows. Revoke, then launch the app to see how it handles missing permissions.
+</Aside>
+
+### Test Permission-Denied Scenarios
+
+<Steps>
+1. Revoke the permission
+   > Revoke camera permission from com.example.myapp
+
+2. Clear the app data to reset "Don't ask again" state
+   > Clear all data for com.example.myapp
+
+3. Launch the app
+   > Launch com.example.myapp
+
+4. Take a screenshot to verify the permission dialog
+   > Take a screenshot
+</Steps>
+
+---
+
+## Logcat Mastery
+
+### Basic Reading
+
+> Show the last 100 logcat lines
+
+> Show the last 500 log lines
+
+### Filter by Priority
+
+| Priority | Prompt |
+|----------|--------|
+| Errors only | "Show error logs from my device" |
+| Warnings and above | "Show logcat with Warning priority" |
+| Info and above | "Show logcat with Info priority" |
+| Everything | "Show verbose logcat" |
+
+### Filter by Tag
+
+> Show logcat for tag MyApp
+
+> Show logcat for tag CrashReporter with Error priority
+
+### Search for Exceptions
+
+> Search logcat for NullPointerException
+
+> Search logcat for OutOfMemoryError
+
+> Search logcat for ANR
+
+> Search logcat for FATAL
+
+> Search logcat for "Unable to start activity"
+
+### Time-Based Filtering
+
+> Show logs since 2025-01-15 10:30:00
+
+> Show error logs since 2025-01-15 14:00:00.000
+
+### Combined Filters
+
+> Show the last 200 error logs for tag CrashHandler containing "fatal"
+
+> Show warning logs for tag NetworkClient containing "timeout" since 10:00:00
+
+### Clear and Start Fresh
+
+> Clear the logcat buffer
+
+Then reproduce the bug:
+
+> Show error logs from my device
+
+<Aside type="caution">
+  Always clear logcat before reproducing a bug. This eliminates noise from unrelated log entries.
+</Aside>
+
+---
+
+## Visual Debugging
+
+### Screenshots
+
+> Take a screenshot of my device
+
+> Capture a screenshot and save to ~/Desktop/bug-report.png
+
+> Take a screenshot and save to ./screenshots/login-screen.png
+
+### Screen Recording
+
+> Record my device screen for 10 seconds
+
+> Record my device screen for 30 seconds and save to ~/Desktop/demo.mp4
+
+> Record a 60-second video of my device
+
+<Aside type="note">
+  Maximum recording duration is 180 seconds (3 minutes).
+</Aside>
+
+### UI Hierarchy Dump
+
+> Dump the UI hierarchy of the current screen
+
+Returns XML with every view element, its bounds, text content, content description, and click/focus state. Invaluable for:
+- Finding views that aren't visible
+- Debugging layout overlap issues
+- Verifying accessibility labels
+- Understanding third-party UI components
+
+### Combined Visual Debug
+
+<Steps>
+1. Screenshot the current state
+   > Take a screenshot
+
+2. Dump the UI tree
+   > Dump the UI hierarchy
+
+3. Check logcat for errors
+   > Show error logs from my device
+
+4. Get memory info
+   > Run "dumpsys meminfo com.example.myapp" on the device
+</Steps>
+
+---
+
+## Shell Commands
+
+### Package Management
+
+> Run "pm list packages" on my device
+
+> Run "pm list packages -3" to show third-party apps only
+
+> Run "pm path com.example.myapp" to find the APK path
+
+### System Information
+
+> Run "df -h" to check disk space
+
+> Run "cat /proc/meminfo" for memory info
+
+> Run "getprop ro.build.version.release" for Android version
+
+> Run "ip addr show wlan0" to get device IP address
+
+### Performance Profiling
+
+> Run "dumpsys meminfo com.example.myapp" on the device
+
+> Run "dumpsys cpuinfo" to check CPU usage
+
+> Run "dumpsys battery" to check battery stats
+
+> Run "dumpsys activity top" to see the current foreground activity
+
+> Run "dumpsys gfxinfo com.example.myapp" for frame rendering stats
+
+### Force GC and Trim
+
+> Run "am send-trim-memory com.example.myapp COMPLETE" on the device
+
+---
+
+## WiFi ADB & File Transfer
+
+### WiFi ADB Setup
+
+<Steps>
+1. Connect your device via USB
+2. Switch to WiFi mode
+   > Connect to my device over WiFi ADB
+3. Unplug the USB cable — the device stays connected wirelessly
+4. When done:
+   > Disconnect WiFi ADB
+</Steps>
+
+### Push Files to Device
+
+> Push test-data.json to /sdcard/Download/ on the device
+
+> Push config.xml to /sdcard/Android/data/com.example.myapp/files/
+
+### Pull Files from Device
+
+> Pull /data/data/com.example.myapp/databases/app.db from the device
+
+> Pull /sdcard/Download/crash-log.txt to ./debug/
+
+> Pull /data/data/com.example.myapp/shared_prefs/ from the device
+
+### Common Device Paths
+
+| Path | Contents |
+|------|----------|
+| `/sdcard/Download/` | Downloads folder |
+| `/sdcard/DCIM/` | Camera photos |
+| `/sdcard/Pictures/Screenshots/` | Device screenshots |
+| `/data/data/<package>/databases/` | App databases |
+| `/data/data/<package>/shared_prefs/` | SharedPreferences XML |
+| `/data/data/<package>/files/` | Internal file storage |
+| `/data/data/<package>/cache/` | App cache |
+
+<Aside type="caution">
+  Paths under `/data/data/` require the app to be debuggable or the device to be rooted. Emulators with Google APIs (not Play) have root access by default.
+</Aside>

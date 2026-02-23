@@ -1,0 +1,126 @@
+---
+title: Prompt Quick Reference
+description: Copy-paste prompts for all 39 Android Pilot MCP tools — your cheat sheet for every Android development task.
+sidebar:
+  order: 4
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+A quick-reference table of prompts for every tool. Copy, paste, and go.
+
+<Aside type="tip">
+  These prompts work with any MCP-compatible editor — Claude Code, Cursor, Windsurf, and more. Just type them as-is.
+</Aside>
+
+## Build & Lint
+
+| What you want | Prompt |
+|---------------|--------|
+| Build debug APK | "Build my Android project" |
+| Build release APK | "Build my app in release mode" |
+| Build specific module | "Build the :feature module" |
+| Build with stacktrace | "Build my project with stacktrace enabled" |
+| Run tests | "Run tests for my Android project" |
+| Run any Gradle task | "Run the assembleRelease Gradle task" |
+| Run task with args | "Run the test task with --info flag" |
+| List Gradle tasks | "List all available Gradle tasks" |
+| List module tasks | "Show Gradle tasks for the :app module" |
+| Clean build | "Clean my Android project" |
+| Show dependencies | "Show the dependency tree for my app" |
+| Show specific config | "Show debugCompileClasspath dependencies" |
+| Run lint | "Run Android Lint on my project" |
+| Lint with fatal errors | "Run lint and treat fatal issues as errors" |
+
+## Device Management
+
+| What you want | Prompt |
+|---------------|--------|
+| List devices | "List my connected Android devices" |
+| List emulators | "List my available Android emulators" |
+| Create emulator | "Create an Android 35 emulator called TestDevice" |
+| Create with device profile | "Create a Pixel 7 Pro emulator with API 34" |
+| Start emulator | "Start the TestDevice emulator" |
+| Start with cold boot | "Start the emulator with cold boot" |
+| Start headless | "Start the emulator in headless mode" |
+| Start and wipe data | "Start the emulator and wipe all data" |
+| Stop emulator | "Stop the running emulator" |
+| Install APK | "Install my debug APK on the device" |
+| Reinstall APK | "Reinstall the APK keeping existing data" |
+| Launch app | "Launch com.example.myapp" |
+| Launch specific activity | "Launch the SettingsActivity of com.example.myapp" |
+| Stop app | "Force stop com.example.myapp" |
+| Clear app data | "Clear all data for com.example.myapp" |
+| Grant permission | "Grant camera permission to com.example.myapp" |
+| Revoke permission | "Revoke location permission from com.example.myapp" |
+| List permissions | "List all permissions for com.example.myapp" |
+| Connect WiFi ADB | "Connect to my device over WiFi ADB" |
+| Disconnect WiFi ADB | "Disconnect WiFi ADB" |
+| Push file to device | "Push test.json to /sdcard/Download/ on the device" |
+| Pull file from device | "Pull /sdcard/Download/log.txt from the device" |
+
+## Debugging
+
+| What you want | Prompt |
+|---------------|--------|
+| Show recent logs | "Show the last 100 logcat lines" |
+| Show errors only | "Show error logs from my device" |
+| Filter by tag | "Show logcat for tag MyApp" |
+| Filter by tag + priority | "Show logcat for tag MyApp with Warning priority" |
+| Search logs | "Search logcat for NullPointerException" |
+| Time-based logs | "Show logs since 2025-01-15 10:30:00" |
+| Combined filter | "Show error logs for tag CrashHandler containing fatal" |
+| Clear logcat | "Clear the logcat buffer" |
+| Take screenshot | "Take a screenshot of my device" |
+| Save screenshot | "Capture screenshot and save to ~/Desktop/screen.png" |
+| Record screen | "Record my device screen for 30 seconds" |
+| Record with path | "Record 10 seconds and save to ./recording.mp4" |
+| Get device info | "Get info about my connected device" |
+| Run shell command | "Run dumpsys meminfo on my device" |
+| Dump UI hierarchy | "Dump the UI hierarchy of the current screen" |
+
+## Scaffolding
+
+| What you want | Prompt |
+|---------------|--------|
+| Create Compose project | "Create a new Android project called MyApp with package com.example.myapp" |
+| Create XML project | "Create an XML-based Android project called MyApp" |
+| Custom SDK versions | "Create a project with minSdk 21 and targetSdk 35" |
+| Create Activity | "Create a DetailActivity in my project" |
+| Activity without layout | "Scaffold a SettingsActivity without a layout file" |
+| Create Fragment | "Create a ProfileFragment in my project" |
+| Create Compose Screen | "Create a ProfileScreen composable" |
+| Screen with ViewModel | "Scaffold a SettingsScreen with a ViewModel" |
+
+## APK Analysis
+
+| What you want | Prompt |
+|---------------|--------|
+| Quick APK summary | "Analyze my debug APK" |
+| Full APK analysis | "Show full APK analysis with manifest" |
+| Check APK permissions | "List permissions in my release APK" |
+| Analyze specific APK | "Analyze the APK at ./app/build/outputs/apk/debug/app-debug.apk" |
+
+## Intents & Deep Links
+
+| What you want | Prompt |
+|---------------|--------|
+| Open URL | "Open https://example.com on my device" |
+| Open Settings | "Open Android Settings on the device" |
+| Send custom intent | "Send intent with action com.example.MY_ACTION" |
+| Intent with extras | "Send intent VIEW with extra key=value to com.example.myapp" |
+| Send broadcast | "Send broadcast com.example.REFRESH" |
+| Broadcast with extras | "Send broadcast com.example.UPDATE with extra version=2" |
+| Test deep link | "Test deep link myapp://profile/123 on my device" |
+| Test App Link | "Test https://example.com/product/456 in com.example.myapp" |
+
+## SDK Management
+
+| What you want | Prompt |
+|---------------|--------|
+| List installed packages | "List my installed SDK packages" |
+| List all available | "Show all available SDK packages" |
+| Install platform | "Install Android 35 platform" |
+| Install system image | "Install system image for API 35 with Google APIs ARM64" |
+| Install build tools | "Install build tools 35.0.0" |
+| Setup new API level | "Install platform, system image, and build tools for API 35" |

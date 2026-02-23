@@ -1,0 +1,29 @@
+---
+title: Scaffold Activity
+description: Generate a new Activity Kotlin file from a template.
+---
+
+## Overview
+
+Generate an Activity class with boilerplate code and an optional XML layout file.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectDir` | `string` | Yes | — | Absolute path to the Android project root |
+| `activityName` | `string` | Yes | — | Activity class name (e.g., `DetailActivity`) |
+| `packageName` | `string` | Yes | — | Package name (e.g., `com.example.myapp`) |
+| `module` | `string` | No | `app` | Module name |
+| `layout` | `boolean` | No | `true` | Generate a corresponding XML layout file |
+
+## Examples
+
+> Create a DetailActivity in my project with package com.example.myapp
+
+> Scaffold a SettingsActivity without a layout file
+
+## Related Tools
+
+- [Scaffold Fragment](/android-pilot-mcp/tools/scaffold/scaffold-fragment/) — Generate fragments
+- [Scaffold Compose Screen](/android-pilot-mcp/tools/scaffold/scaffold-compose/) — Generate Compose screens

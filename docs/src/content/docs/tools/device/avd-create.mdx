@@ -1,0 +1,37 @@
+---
+title: Create AVD
+description: Create a new Android Virtual Device with a specified system image and device profile.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Create a new Android emulator with a specific API level, device profile, and system image.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `name` | `string` | Yes | — | Name for the new AVD |
+| `package` | `string` | Yes | — | System image package (e.g., `system-images;android-35;google_apis;arm64-v8a`) |
+| `device` | `string` | No | `pixel_6` | Hardware device profile (e.g., `pixel_6`, `pixel_7_pro`) |
+| `force` | `boolean` | No | `false` | Overwrite existing AVD with the same name |
+
+## Examples
+
+> Create an Android 35 emulator called TestDevice
+
+> Create a Pixel 7 Pro emulator with API 34
+
+> Create an emulator called CI_Test, overwriting if it exists
+
+<Aside type="tip">
+  Use "List available SDK packages" first to find the right system image package string.
+</Aside>
+
+## Related Tools
+
+- [AVD List](/android-pilot-mcp/tools/device/avd-list/) — See existing AVDs
+- [Start Emulator](/android-pilot-mcp/tools/device/emulator-start/) — Start the new AVD
+- [SDK List](/android-pilot-mcp/tools/sdk/sdk-list/) — Find available system images

@@ -1,0 +1,37 @@
+---
+title: Gradle Build
+description: Run a Gradle build for an Android project with debug or release variants.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Build an Android project using Gradle. Supports debug and release variants with optional module targeting.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `projectDir` | `string` | Yes | — | Absolute path to the Android project root |
+| `variant` | `"debug" \| "release"` | No | `debug` | Build variant |
+| `module` | `string` | No | — | Specific module to build (e.g., `:app`) |
+| `stacktrace` | `boolean` | No | `false` | Include full stacktrace on error |
+
+## Examples
+
+> Build my Android project
+
+> Build my app in release mode
+
+> Build the :feature module in debug mode with stacktrace
+
+<Aside type="tip">
+  Use stacktrace when debugging build failures — it provides the full error trace instead of just the summary.
+</Aside>
+
+## Related Tools
+
+- [Gradle Clean](/android-pilot-mcp/tools/build/gradle-clean/) — Clean before rebuilding
+- [Gradle Task](/android-pilot-mcp/tools/build/gradle-task/) — Run custom Gradle tasks
+- [Android Lint](/android-pilot-mcp/tools/build/lint-run/) — Check code quality after building

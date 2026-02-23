@@ -1,0 +1,28 @@
+---
+title: Launch App
+description: Launch an Android application on a connected device.
+---
+
+## Overview
+
+Start an app by its package name. Optionally launch a specific activity.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `packageName` | `string` | Yes | — | Application package name (e.g., `com.example.myapp`) |
+| `activityName` | `string` | No | — | Fully qualified activity name (launches default if omitted) |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Launch com.example.myapp
+
+> Launch the SettingsActivity of com.example.myapp
+
+## Related Tools
+
+- [Stop App](/android-pilot-mcp/tools/device/app-stop/) — Force stop the app
+- [Install APK](/android-pilot-mcp/tools/device/apk-install/) — Install before launching
+- [Screenshot](/android-pilot-mcp/tools/debug/screenshot/) — Verify the app launched correctly

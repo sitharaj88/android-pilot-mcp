@@ -1,0 +1,66 @@
+{
+  "name": "android-pilot-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Android development - build, device, debug, and scaffolding tools",
+  "type": "module",
+  "bin": {
+    "android-pilot-mcp": "./build/index.js"
+  },
+  "main": "./build/index.js",
+  "files": [
+    "build/"
+  ],
+  "scripts": {
+    "build": "tsc && rm -rf build/templates && cp -r src/templates build/templates && chmod +x build/index.js",
+    "dev": "tsc --watch",
+    "start": "node build/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint --fix src/ tests/",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run lint && npm run format:check",
+    "prepare": "husky",
+    "prepublishOnly": "npm run check && npm run build"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sitharaj88/android-pilot-mcp.git"
+  },
+  "homepage": "https://github.com/sitharaj88/android-pilot-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/sitharaj88/android-pilot-mcp/issues"
+  },
+  "author": "Sitharaj Seenivasan (https://github.com/sitharaj88)",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "android", "adb", "gradle", "emulator", "claude"]
+}

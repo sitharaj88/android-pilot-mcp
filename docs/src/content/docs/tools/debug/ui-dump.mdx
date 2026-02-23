@@ -1,0 +1,26 @@
+---
+title: UI Dump
+description: Dump the current screen's UI hierarchy as XML using UI Automator.
+---
+
+## Overview
+
+Get the complete view hierarchy of the current screen as XML. Shows every view element with its bounds, text, content description, and state. Essential for debugging layout issues.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `compressed` | `boolean` | No | `true` | Use compressed format for smaller output |
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Dump the UI hierarchy of the current screen
+
+> Show what's on screen as XML
+
+## Related Tools
+
+- [Screenshot](/android-pilot-mcp/tools/debug/screenshot/) — Visual capture alongside hierarchy
+- [Device Shell](/android-pilot-mcp/tools/debug/device-shell/) — Alternative with `uiautomator dump`

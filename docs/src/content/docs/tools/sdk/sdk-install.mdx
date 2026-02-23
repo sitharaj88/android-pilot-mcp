@@ -1,0 +1,35 @@
+---
+title: SDK Install
+description: Install Android SDK packages including platforms, system images, and build tools.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Install SDK packages by their package name. Automatically accepts licenses.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `packages` | `string[]` | Yes | — | Package names to install (e.g., `['platforms;android-35']`) |
+
+## Examples
+
+> Install Android 35 platform
+
+> Install system-images;android-35;google_apis;arm64-v8a
+
+> Install build-tools;35.0.0
+
+> Install platforms;android-35, system-images;android-35;google_apis;arm64-v8a, and build-tools;35.0.0
+
+<Aside type="tip">
+  Use "List available SDK packages" first to find the exact package names.
+</Aside>
+
+## Related Tools
+
+- [SDK List](/android-pilot-mcp/tools/sdk/sdk-list/) — Find package names
+- [Create AVD](/android-pilot-mcp/tools/device/avd-create/) — Create an emulator after installing a system image

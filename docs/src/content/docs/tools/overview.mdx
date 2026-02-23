@@ -1,0 +1,80 @@
+---
+title: Tools Overview
+description: Complete reference of all 39 Android Pilot MCP tools organized by category.
+---
+
+Android Pilot MCP provides **39 tools** across **7 categories** for comprehensive Android development.
+
+## Build & Lint (6 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`gradle_build`](/android-pilot-mcp/tools/build/gradle-build/) | Run a Gradle build with debug/release variant |
+| [`gradle_task`](/android-pilot-mcp/tools/build/gradle-task/) | Run an arbitrary Gradle task |
+| [`gradle_list_tasks`](/android-pilot-mcp/tools/build/gradle-list-tasks/) | List all available Gradle tasks |
+| [`gradle_clean`](/android-pilot-mcp/tools/build/gradle-clean/) | Clean the build output |
+| [`gradle_dependencies`](/android-pilot-mcp/tools/build/gradle-dependencies/) | Show the dependency tree |
+| [`lint_run`](/android-pilot-mcp/tools/build/lint-run/) | Run Android Lint analysis |
+
+## Device Management (15 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`device_list`](/android-pilot-mcp/tools/device/device-list/) | List all connected devices and emulators |
+| [`avd_list`](/android-pilot-mcp/tools/device/avd-list/) | List all available AVDs |
+| [`avd_create`](/android-pilot-mcp/tools/device/avd-create/) | Create a new AVD |
+| [`emulator_start`](/android-pilot-mcp/tools/device/emulator-start/) | Start an emulator by AVD name |
+| [`emulator_stop`](/android-pilot-mcp/tools/device/emulator-stop/) | Stop a running emulator |
+| [`apk_install`](/android-pilot-mcp/tools/device/apk-install/) | Install an APK on a device |
+| [`app_launch`](/android-pilot-mcp/tools/device/app-launch/) | Launch an app by package name |
+| [`app_stop`](/android-pilot-mcp/tools/device/app-stop/) | Force stop a running app |
+| [`app_clear_data`](/android-pilot-mcp/tools/device/app-clear-data/) | Clear all data for an app |
+| [`app_permission`](/android-pilot-mcp/tools/device/app-permission/) | Grant or revoke a runtime permission |
+| [`app_permissions_list`](/android-pilot-mcp/tools/device/app-permissions-list/) | List all permissions for an app |
+| [`adb_wifi_connect`](/android-pilot-mcp/tools/device/wifi-adb/) | Connect over WiFi ADB |
+| [`adb_wifi_disconnect`](/android-pilot-mcp/tools/device/wifi-adb/) | Disconnect WiFi ADB |
+| [`file_push`](/android-pilot-mcp/tools/device/file-transfer/) | Push a file to a device |
+| [`file_pull`](/android-pilot-mcp/tools/device/file-transfer/) | Pull a file from a device |
+
+## Debugging (7 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`logcat_read`](/android-pilot-mcp/tools/debug/logcat/) | Read logcat with filtering |
+| [`logcat_clear`](/android-pilot-mcp/tools/debug/logcat/) | Clear the logcat buffer |
+| [`device_screenshot`](/android-pilot-mcp/tools/debug/screenshot/) | Capture a screenshot |
+| [`device_info`](/android-pilot-mcp/tools/debug/device-info/) | Get device details |
+| [`device_shell`](/android-pilot-mcp/tools/debug/device-shell/) | Execute a shell command |
+| [`ui_dump`](/android-pilot-mcp/tools/debug/ui-dump/) | Dump the UI hierarchy |
+| [`screen_record`](/android-pilot-mcp/tools/debug/screen-record/) | Record the screen |
+
+## Scaffolding (4 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`project_create`](/android-pilot-mcp/tools/scaffold/project-create/) | Create a new Android project |
+| [`scaffold_activity`](/android-pilot-mcp/tools/scaffold/scaffold-activity/) | Generate an Activity |
+| [`scaffold_fragment`](/android-pilot-mcp/tools/scaffold/scaffold-fragment/) | Generate a Fragment |
+| [`scaffold_compose_screen`](/android-pilot-mcp/tools/scaffold/scaffold-compose/) | Generate a Compose screen |
+
+## APK Analysis (2 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`apk_analyze`](/android-pilot-mcp/tools/analyze/apk-analyze/) | Analyze APK size, version, and more |
+| [`apk_permissions`](/android-pilot-mcp/tools/analyze/apk-permissions/) | List APK permissions |
+
+## Intents & Deep Links (3 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`intent_send`](/android-pilot-mcp/tools/intent/intent-send/) | Send an Android intent |
+| [`broadcast_send`](/android-pilot-mcp/tools/intent/broadcast-send/) | Send a broadcast |
+| [`deeplink_test`](/android-pilot-mcp/tools/intent/deeplink-test/) | Test a deep link URI |
+
+## SDK Management (2 tools)
+
+| Tool | Description |
+|------|-------------|
+| [`sdk_list`](/android-pilot-mcp/tools/sdk/sdk-list/) | List SDK packages |
+| [`sdk_install`](/android-pilot-mcp/tools/sdk/sdk-install/) | Install SDK packages |
