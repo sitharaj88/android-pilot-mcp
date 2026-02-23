@@ -1,65 +1,72 @@
-# android-pilot-mcp
+# Android Pilot MCP
 
 [![npm version](https://img.shields.io/npm/v/android-pilot-mcp.svg)](https://www.npmjs.com/package/android-pilot-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/sitharaj88/android-pilot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sitharaj88/android-pilot-mcp/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides comprehensive Android development tools for AI-powered editors. Gives MCP clients like **Claude Code**, **Cursor**, and **Windsurf** direct access to Gradle builds, device management, debugging, code scaffolding, APK analysis, intent testing, and SDK management — **39 tools** across **7 categories**.
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that gives AI-powered editors full control over Android development. Build, test, debug, and deploy Android apps entirely through natural language.
 
-## Features
+Works with **Claude Code**, **Cursor**, **Windsurf**, and any MCP-compatible client.
 
-- **Build & Lint** — Gradle build, task runner, dependency tree, project clean, and Android Lint analysis
-- **Device Management** — List/create/start/stop emulators, install APKs, launch and manage apps, handle permissions, WiFi ADB, and file transfer
-- **Debugging** — Logcat reading and filtering, screenshots, screen recording, UI hierarchy dumps, device info, and shell commands
-- **Scaffolding** — Create full Android projects (Compose or XML), scaffold activities, fragments, and Compose screens with templates
-- **APK Analysis** — Inspect APK size, versions, SDK targets, DEX references, file listings, manifests, and permissions
-- **Intents & Deep Links** — Send intents, broadcast events, and test deep link URIs on connected devices
-- **SDK Management** — List installed/available SDK packages and install new ones
+**[Read the full documentation](https://sitharaj88.github.io/android-pilot-mcp)**
 
-## Prerequisites
+## What Can It Do?
 
-- **Node.js** 20 or later
-- **Android SDK** with platform-tools (adb), emulator, and command-line tools
-- **Java JDK** 17 or later (for Gradle builds)
+Just tell your AI editor what you want:
 
-### Environment Variables
+```
+"Build my Android project"
+"Create a new Compose project called MyApp with package com.example.myapp"
+"List my connected devices"
+"Install the debug APK and launch the app"
+"Show error logs for tag CrashHandler"
+"Take a screenshot of my device"
+"Run lint and treat fatal issues as errors"
+"Test deep link myapp://profile/123 on my device"
+```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `ANDROID_HOME` | Yes* | Path to your Android SDK installation |
-| `JAVA_HOME` | Recommended | Path to your JDK installation (needed for Gradle builds) |
+No manual adb commands. No switching between terminal and IDE. Your AI editor handles it all.
 
-\* If `ANDROID_HOME` is not set, the server also checks `ANDROID_SDK_ROOT` and the macOS default path `~/Library/Android/sdk`.
+## 39 Tools Across 7 Categories
+
+| Category | Tools | What It Covers |
+|----------|:-----:|----------------|
+| **Build & Lint** | 6 | Gradle build, task runner, clean, dependency tree, lint analysis |
+| **Device Management** | 15 | Emulators, APK install, app lifecycle, permissions, WiFi ADB, file transfer |
+| **Debugging** | 7 | Logcat, screenshots, screen recording, UI hierarchy, shell commands |
+| **Scaffolding** | 4 | Project creation (Compose/XML), activities, fragments, Compose screens |
+| **APK Analysis** | 2 | APK inspection, size, manifest, permissions audit |
+| **Intents & Deep Links** | 3 | Send intents, broadcast events, test deep links |
+| **SDK Management** | 2 | List/install SDK packages, system images, build tools |
 
 ## Quick Start
 
-### Install globally from npm
-
-```bash
-npm install -g android-pilot-mcp
-```
-
-### Run directly with npx (no install needed)
+### Install and run with npx (no install needed)
 
 ```bash
 npx android-pilot-mcp
 ```
 
-### Install from source
+### Or install globally
 
 ```bash
-git clone https://github.com/sitharaj88/android-pilot-mcp.git
-cd android-pilot-mcp
-npm install
-npm run build
+npm install -g android-pilot-mcp
 ```
 
-## Configuration
+## Prerequisites
+
+- **Node.js** 20+
+- **Android SDK** with platform-tools (adb), emulator, and command-line tools
+- **Java JDK** 17+ (for Gradle builds)
+
+The server looks for the Android SDK via `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or the macOS default `~/Library/Android/sdk`.
+
+## Editor Setup
 
 ### Claude Code
 
-Add to your project's `.mcp.json` or global `~/.claude/mcp.json`:
+Add to `.mcp.json` (project) or `~/.claude/mcp.json` (global):
 
 ```json
 {
@@ -73,22 +80,9 @@ Add to your project's `.mcp.json` or global `~/.claude/mcp.json`:
 }
 ```
 
-Or if installed globally:
-
-```json
-{
-  "mcpServers": {
-    "android-pilot": {
-      "type": "stdio",
-      "command": "android-pilot-mcp"
-    }
-  }
-}
-```
-
 ### Cursor
 
-Open Cursor Settings > MCP and add a new server, or edit `~/.cursor/mcp.json`:
+Add via Cursor Settings > MCP, or edit `~/.cursor/mcp.json`:
 
 ```json
 {
@@ -103,7 +97,7 @@ Open Cursor Settings > MCP and add a new server, or edit `~/.cursor/mcp.json`:
 
 ### Windsurf
 
-Open Windsurf Settings > MCP and add:
+Add via Windsurf Settings > MCP:
 
 ```json
 {
@@ -118,70 +112,70 @@ Open Windsurf Settings > MCP and add:
 
 ### Other MCP Clients
 
-Any MCP client that supports stdio transport can use this server. Point it at the `android-pilot-mcp` command or `npx -y android-pilot-mcp`.
+Any MCP client with stdio transport support works. Point it at `npx -y android-pilot-mcp`.
 
 ## Tool Reference
 
-### Build & Lint (6 tools)
+### Build & Lint
 
 | Tool | Description |
 |------|-------------|
-| `gradle_build` | Run a Gradle build with debug/release variant and optional module targeting |
-| `gradle_task` | Run an arbitrary Gradle task (test, lint, connectedAndroidTest, etc.) |
-| `gradle_list_tasks` | List all available Gradle tasks in a project |
-| `gradle_clean` | Clean the build output of a project |
+| `gradle_build` | Run debug/release builds with optional module targeting |
+| `gradle_task` | Run any Gradle task (test, lint, bundle, connectedAndroidTest, etc.) |
+| `gradle_list_tasks` | List all available Gradle tasks |
+| `gradle_clean` | Clean build output |
 | `gradle_dependencies` | Show the dependency tree for a module |
-| `lint_run` | Run Android Lint analysis and return warnings, errors, and suggestions |
+| `lint_run` | Run Android Lint — returns warnings, errors, and suggestions with file locations |
 
-### Device Management (15 tools)
+### Device Management
 
 | Tool | Description |
 |------|-------------|
-| `device_list` | List all connected devices and running emulators |
-| `avd_list` | List all available Android Virtual Devices |
-| `avd_create` | Create a new AVD with a specified system image and device profile |
-| `emulator_start` | Start an emulator by AVD name (cold boot, headless, wipe options) |
+| `device_list` | List connected devices and running emulators |
+| `avd_list` | List available AVDs |
+| `avd_create` | Create a new AVD with system image and device profile |
+| `emulator_start` | Start an emulator (cold boot, headless, wipe data options) |
 | `emulator_stop` | Stop a running emulator |
-| `apk_install` | Install an APK on a device or emulator |
+| `apk_install` | Install an APK on a device |
 | `app_launch` | Launch an app by package name |
 | `app_stop` | Force stop a running app |
-| `app_clear_data` | Clear all data for an installed app |
+| `app_clear_data` | Clear all app data (equivalent to Clear Storage) |
 | `app_permission` | Grant or revoke a runtime permission |
-| `app_permissions_list` | List all permissions for an app (granted and denied) |
-| `adb_wifi_connect` | Connect to a device over WiFi ADB |
-| `adb_wifi_disconnect` | Disconnect a WiFi ADB connection |
-| `file_push` | Push a local file to a device |
-| `file_pull` | Pull a file from a device to the local machine |
+| `app_permissions_list` | List all permissions with granted/denied status |
+| `adb_wifi_connect` | Switch to WiFi ADB |
+| `adb_wifi_disconnect` | Disconnect WiFi ADB |
+| `file_push` | Push a file to the device |
+| `file_pull` | Pull a file from the device |
 
-### Debugging (7 tools)
+### Debugging
 
 | Tool | Description |
 |------|-------------|
-| `logcat_read` | Read logcat with filtering by tag, priority, time, or search string |
+| `logcat_read` | Read logcat with tag, priority, time, and text filters |
 | `logcat_clear` | Clear the logcat buffer |
-| `device_screenshot` | Capture a screenshot as base64-encoded PNG |
-| `device_info` | Get device details (model, OS, screen density, etc.) |
-| `device_shell` | Execute an arbitrary ADB shell command |
-| `ui_dump` | Dump the UI hierarchy as XML via UI Automator |
-| `screen_record` | Record the device screen as MP4 |
+| `device_screenshot` | Capture a screenshot as PNG |
+| `device_info` | Get device model, OS version, screen density, and more |
+| `device_shell` | Execute an ADB shell command |
+| `ui_dump` | Dump UI hierarchy as XML via UI Automator |
+| `screen_record` | Record the screen as MP4 (up to 180 seconds) |
 
-### Scaffolding (4 tools)
+### Scaffolding
 
 | Tool | Description |
 |------|-------------|
-| `project_create` | Create a new Android project with Kotlin and Gradle KTS (Compose or XML) |
-| `scaffold_activity` | Generate an Activity from a template with optional layout |
-| `scaffold_fragment` | Generate a Fragment from a template with optional layout |
+| `project_create` | Create a new Android project with Kotlin + Gradle KTS (Compose or XML) |
+| `scaffold_activity` | Generate an Activity with optional XML layout |
+| `scaffold_fragment` | Generate a Fragment with optional XML layout |
 | `scaffold_compose_screen` | Generate a Compose screen with preview and optional ViewModel |
 
-### APK Analysis (2 tools)
+### APK Analysis
 
 | Tool | Description |
 |------|-------------|
-| `apk_analyze` | Analyze APK size, version, SDK targets, DEX refs, and optionally full manifest |
+| `apk_analyze` | Inspect size, version, SDK targets, DEX references, manifest |
 | `apk_permissions` | List all permissions declared in an APK |
 
-### Intents & Deep Links (3 tools)
+### Intents & Deep Links
 
 | Tool | Description |
 |------|-------------|
@@ -189,12 +183,25 @@ Any MCP client that supports stdio transport can use this server. Point it at th
 | `broadcast_send` | Send a broadcast intent |
 | `deeplink_test` | Test a deep link URI on a connected device |
 
-### SDK Management (2 tools)
+### SDK Management
 
 | Tool | Description |
 |------|-------------|
-| `sdk_list` | List installed or available SDK packages, system images, and build tools |
-| `sdk_install` | Install SDK packages (platforms, system images, build tools, etc.) |
+| `sdk_list` | List installed or available SDK packages |
+| `sdk_install` | Install SDK packages (platforms, system images, build tools) |
+
+## Documentation
+
+Full documentation with guides, tool reference, and a prompt cookbook is available at:
+
+**[https://sitharaj88.github.io/android-pilot-mcp](https://sitharaj88.github.io/android-pilot-mcp)**
+
+Includes:
+- Step-by-step setup guides
+- Detailed tool reference for all 39 tools
+- Prompt cookbook with 65+ copy-paste prompts
+- Real-world workflows (build, debug, deploy)
+- Architecture overview
 
 ## Contributing
 
@@ -202,4 +209,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding standards, 
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](LICENSE) for details.
