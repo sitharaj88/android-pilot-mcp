@@ -1,3 +1,5 @@
+import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import type { ServerRequest, ServerNotification } from "@modelcontextprotocol/sdk/types.js";
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
 import { textResponse, errorResponse } from "../../utils/response.js";
@@ -6,11 +8,16 @@ interface SdkListArgs {
   installed: boolean;
 }
 
-export async function sdkList(args: SdkListArgs, env: Environment) {
+export async function sdkList(
+  args: SdkListArgs,
+  env: Environment,
+  extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+) {
   const sdkArgs = args.installed ? ["--list_installed"] : ["--list"];
 
   const result = await executeCommand(env.sdkmanagerPath, sdkArgs, {
     timeout: 30_000,
+    signal: extra.signal,
   });
 
   if (!result.success) {

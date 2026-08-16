@@ -1,6 +1,8 @@
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
 import { textResponse, errorResponse } from "../../utils/response.js";
+import { validateDeviceId } from "../../utils/validation.js";
+import { DebugToolExtra } from "./types.js";
 
 interface LogcatReadArgs {
   deviceId?: string;
@@ -11,7 +13,9 @@ interface LogcatReadArgs {
   since?: string;
 }
 
-export async function logcatRead(args: LogcatReadArgs, env: Environment) {
+export async function logcatRead(args: LogcatReadArgs, env: Environment, extra?: DebugToolExtra) {
+  if (args.deviceId) validateDeviceId(args.deviceId);
+
   const adbArgs: string[] = [];
   if (args.deviceId) adbArgs.push("-s", args.deviceId);
   adbArgs.push("logcat", "-d");
@@ -33,6 +37,7 @@ export async function logcatRead(args: LogcatReadArgs, env: Environment) {
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 15_000,
+    signal: extra?.signal,
   });
 
   if (!result.success) {

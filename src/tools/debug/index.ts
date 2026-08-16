@@ -1,5 +1,4 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
 import { Environment } from "../../types.js";
 import { withErrorHandling } from "../../utils/response.js";
 import { logcatRead } from "./logcat.js";
@@ -9,92 +8,133 @@ import { deviceInfo } from "./device-info.js";
 import { deviceShell } from "./device-shell.js";
 import { uiDump } from "./ui-dump.js";
 import { screenRecord } from "./screen-record.js";
+import {
+  logcatReadInputSchema,
+  logcatClearInputSchema,
+  deviceScreenshotInputSchema,
+  deviceInfoInputSchema,
+  deviceInfoOutputSchema,
+  deviceShellInputSchema,
+  uiDumpInputSchema,
+  screenRecordInputSchema,
+} from "./schemas.js";
 
 export function registerDebugTools(server: McpServer, env: Environment): void {
-  server.tool(
+  server.registerTool(
     "logcat_read",
-    "Read Android logcat output with optional filtering by tag, priority level, or search string",
     {
-      deviceId: z.string().optional().describe("Target device serial"),
-      tag: z.string().optional().describe("Filter by log tag, e.g. 'MyApp'"),
-      priority: z
-        .enum(["V", "D", "I", "W", "E", "F"])
-        .optional()
-        .describe(
-          "Minimum log priority level (V=Verbose, D=Debug, I=Info, W=Warn, E=Error, F=Fatal)",
-        ),
-      grep: z
-        .string()
-        .optional()
-        .describe("Filter output lines containing this string (case-insensitive)"),
-      lines: z.number().default(100).describe("Maximum number of recent log lines to return"),
-      since: z
-        .string()
-        .optional()
-        .describe("Only show logs since this time, e.g. '2024-01-01 12:00:00.000'"),
+      title: "Read Logcat",
+      description:
+        "Read Android logcat output with optional filtering by tag, priority level, or search string",
+      inputSchema: logcatReadInputSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => logcatRead(args, env)),
+    withErrorHandling(async (args, extra) => logcatRead(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "logcat_clear",
-    "Clear the logcat buffer on a connected Android device",
     {
-      deviceId: z.string().optional().describe("Target device serial"),
+      title: "Clear Logcat",
+      description: "Clear the logcat buffer on a connected Android device",
+      inputSchema: logcatClearInputSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => logcatClear(args, env)),
+    withErrorHandling(async (args, extra) => logcatClear(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "device_screenshot",
-    "Capture a screenshot from a connected Android device and return it as a base64-encoded PNG",
     {
-      deviceId: z.string().optional().describe("Target device serial"),
-      savePath: z
-        .string()
-        .optional()
-        .describe("Local path to save the screenshot file. If omitted, returns base64 data only"),
+      title: "Capture Screenshot",
+      description:
+        "Capture a screenshot from a connected Android device and return it as a base64-encoded PNG",
+      inputSchema: deviceScreenshotInputSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => deviceScreenshot(args, env)),
+    withErrorHandling(async (args, extra) => deviceScreenshot(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "device_info",
-    "Get detailed information about a connected Android device including model, OS version, screen density, and more",
     {
-      deviceId: z.string().optional().describe("Target device serial"),
+      title: "Get Device Info",
+      description:
+        "Get detailed information about a connected Android device including model, OS version, screen density, and more",
+      inputSchema: deviceInfoInputSchema,
+      outputSchema: deviceInfoOutputSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => deviceInfo(args, env)),
+    withErrorHandling(async (args, extra) => deviceInfo(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "device_shell",
-    "Execute an arbitrary ADB shell command on a connected Android device. Use with caution",
     {
-      command: z.string().describe("Shell command to execute on the device"),
-      deviceId: z.string().optional().describe("Target device serial"),
+      title: "Run Shell Command",
+      description:
+        "Execute an arbitrary ADB shell command on a connected Android device. Use with caution",
+      inputSchema: deviceShellInputSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => deviceShell(args, env)),
+    withErrorHandling(async (args, extra) => deviceShell(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "ui_dump",
-    "Dump the current screen's UI hierarchy (view tree) as XML using UI Automator. Useful for understanding what's displayed on screen",
     {
-      deviceId: z.string().optional().describe("Target device serial"),
-      compressed: z.boolean().default(true).describe("Use compressed format for smaller output"),
+      title: "Dump UI Hierarchy",
+      description:
+        "Dump the current screen's UI hierarchy (view tree) as XML using UI Automator. Useful for understanding what's displayed on screen",
+      inputSchema: uiDumpInputSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => uiDump(args, env)),
+    withErrorHandling(async (args, extra) => uiDump(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "screen_record",
-    "Record the device screen as an MP4 video and save it locally",
     {
-      deviceId: z.string().optional().describe("Target device serial"),
-      duration: z.number().default(10).describe("Recording duration in seconds (max 180)"),
-      savePath: z.string().describe("Local path to save the MP4 recording"),
+      title: "Record Screen",
+      description: "Record the device screen as an MP4 video and save it locally",
+      inputSchema: screenRecordInputSchema,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => screenRecord(args, env)),
+    withErrorHandling(async (args, extra) => screenRecord(args, env, extra)),
   );
 }

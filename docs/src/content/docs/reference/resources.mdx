@@ -1,0 +1,50 @@
+---
+title: MCP Resources
+description: Read-only MCP Resources exposed by Android Pilot MCP for live device state.
+sidebar:
+  order: 3
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+In addition to its 39 tools, Android Pilot MCP exposes a small set of [MCP Resources](https://modelcontextprotocol.io/docs/concepts/resources) — read-only, URI-addressable data that a client can fetch directly, without making a tool call. Resources are a good fit for state a client wants to read (and maybe re-read, or subscribe to) rather than an action to perform.
+
+<Aside type="tip">
+  Not every MCP client surfaces resources the same way. Some list them as attachable context, others let you reference them by URI in a prompt. Check your editor's MCP documentation for how it exposes resources.
+</Aside>
+
+## Available Resources
+
+| URI | MIME Type | Description |
+|-----|-----------|--------------|
+| `android://devices` | `application/json` | Currently connected Android devices and emulators (equivalent to `adb devices -l`) |
+| `android://avds` | `application/json` | Android Virtual Device names available on this machine |
+| `android://logcat/{deviceId}` | `text/plain` | Last 200 lines of logcat output for a specific device |
+| `android://uidump/{deviceId}` | `text/xml` | `uiautomator` XML dump of the current UI hierarchy for a specific device |
+
+### `android://devices`
+
+Returns a JSON object with a `devices` array, each entry containing `serial`, `state`, and any additional properties adb reports (e.g. `model`, `product`, `transport_id`). If the underlying `adb devices` call fails, the resource returns an empty array with an `error` field instead of throwing.
+
+### `android://avds`
+
+Returns a JSON object with an `avds` array of AVD names, parsed from `avdmanager list avd`.
+
+### `android://logcat/{deviceId}`
+
+A [resource template](https://modelcontextprotocol.io/docs/concepts/resources#resource-templates) — substitute `{deviceId}` with a device serial (e.g. `android://logcat/emulator-5554`) to fetch that device's recent logcat buffer as plain text. Output is truncated to the same byte-accurate limit used by the `logcat_read` tool.
+
+### `android://uidump/{deviceId}`
+
+Also a resource template. Substitute `{deviceId}` with a device serial to get a fresh `uiautomator` XML dump for that device. Internally this triggers a dump on the device, reads it back, and deletes the temporary file — the same flow as the `ui_dump` tool, exposed as a resource for clients that prefer resource semantics.
+
+## Resources vs. Tools
+
+Use a resource when you just want to read current state (which devices are connected, what's in logcat right now). Use the equivalent tool (`device_list`, `logcat_read`, `ui_dump`, etc.) when you need filtering, parameters, or a one-off snapshot embedded directly in a tool result. Both read from the same underlying `adb`/`avdmanager` calls, so the data is consistent either way.
+
+## Related
+
+- [MCP Prompts](/android-pilot-mcp/reference/prompts/) — pre-built multi-step workflows that call tools on your behalf
+- [Tools Overview](/android-pilot-mcp/tools/overview/) — the full 39-tool reference

@@ -9,6 +9,10 @@ import { Aside } from "@astrojs/starlight/components";
 
 Install SDK packages by their package name. Automatically accepts licenses.
 
+<Aside type="caution">
+  Installing packages downloads files from Google's SDK repository and auto-accepts any required licenses on your behalf. On MCP clients that support elicitation, the server asks for confirmation before starting; clients without elicitation support proceed without prompting. The server also reports progress notifications while the install runs, and can be cancelled by the client.
+</Aside>
+
 ## Parameters
 
 | Parameter | Type | Required | Default | Description |

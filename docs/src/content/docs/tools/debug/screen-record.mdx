@@ -14,7 +14,7 @@ Record the device screen and save it as an MP4 file locally. Useful for capturin
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `savePath` | `string` | Yes | — | Local path to save the MP4 recording |
-| `duration` | `number` | No | `10` | Recording duration in seconds (max 180) |
+| `duration` | `number` | No | `10` | Recording duration in seconds (clamped to 1-180) |
 | `deviceId` | `string` | No | — | Target device serial |
 
 ## Examples
@@ -26,7 +26,7 @@ Record the device screen and save it as an MP4 file locally. Useful for capturin
 > Record the screen for 60 seconds and save to ~/Desktop/demo.mp4
 
 <Aside type="note">
-  Maximum recording duration is 180 seconds (3 minutes).
+  The `duration` parameter is validated and clamped to 1-180 seconds (3 minutes) by the server — a request outside that range is rejected before any recording starts. Each recording is written to a unique temporary file on the device and cleaned up automatically once it's pulled to your local machine.
 </Aside>
 
 ## Related Tools

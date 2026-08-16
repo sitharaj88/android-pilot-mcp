@@ -19,22 +19,30 @@ vi.mock("../src/utils/logger.js", () => ({
 }));
 
 import { existsSync } from "node:fs";
-import { detectEnvironment } from "../src/environment.js";
+import { detectEnvironment, createUnavailableEnvironment } from "../src/environment.js";
+import { ValidationError } from "../src/utils/validation.js";
 
 const mockedExistsSync = vi.mocked(existsSync);
 
+function setPlatform(platform: NodeJS.Platform): void {
+  Object.defineProperty(process, "platform", { value: platform, configurable: true });
+}
+
 describe("detectEnvironment", () => {
   const originalEnv = { ...process.env };
+  const originalPlatform = process.platform;
 
   beforeEach(() => {
     vi.clearAllMocks();
     delete process.env.ANDROID_HOME;
     delete process.env.ANDROID_SDK_ROOT;
     delete process.env.JAVA_HOME;
+    delete process.env.LOCALAPPDATA;
   });
 
   afterEach(() => {
     process.env = { ...originalEnv };
+    setPlatform(originalPlatform);
   });
 
   it("uses ANDROID_HOME when set", () => {
@@ -53,8 +61,36 @@ describe("detectEnvironment", () => {
     expect(env.androidHome).toBe("/alt/sdk");
   });
 
-  it("falls back to macOS default path", () => {
+  it("falls back to the macOS default path on darwin", () => {
+    setPlatform("darwin");
     mockedExistsSync.mockReturnValue(true);
+
+    const env = detectEnvironment();
+    expect(env.androidHome).toBe("/Users/testuser/Library/Android/sdk");
+  });
+
+  it("falls back to the Linux default path on linux", () => {
+    setPlatform("linux");
+    mockedExistsSync.mockReturnValue(true);
+
+    const env = detectEnvironment();
+    expect(env.androidHome).toBe("/Users/testuser/Android/Sdk");
+  });
+
+  it("falls back to the Windows default path on win32", () => {
+    setPlatform("win32");
+    process.env.LOCALAPPDATA = "/Users/testuser/AppData/Local";
+    mockedExistsSync.mockReturnValue(true);
+
+    const env = detectEnvironment();
+    expect(env.androidHome).toBe("/Users/testuser/AppData/Local/Android/Sdk");
+  });
+
+  it("tries the next platform fallback if the primary one is missing", () => {
+    setPlatform("linux");
+    mockedExistsSync.mockImplementation(
+      (path) => String(path) === "/Users/testuser/Library/Android/sdk",
+    );
 
     const env = detectEnvironment();
     expect(env.androidHome).toBe("/Users/testuser/Library/Android/sdk");
@@ -100,5 +136,25 @@ describe("detectEnvironment", () => {
     expect(env.adbPath).toBe("/sdk/platform-tools/adb");
     expect(env.avdmanagerPath).toBe("/sdk/cmdline-tools/bin/avdmanager");
     expect(env.sdkmanagerPath).toBe("/sdk/cmdline-tools/latest/bin/sdkmanager");
+  });
+});
+
+describe("createUnavailableEnvironment", () => {
+  it("throws a ValidationError on any property access", () => {
+    const env = createUnavailableEnvironment("Android SDK not found.");
+    expect(() => env.androidHome).toThrow(ValidationError);
+    expect(() => env.adbPath).toThrow(ValidationError);
+  });
+
+  it("includes the original reason and a hint to set ANDROID_HOME", () => {
+    const env = createUnavailableEnvironment("Android SDK not found.");
+    try {
+      void env.adbPath;
+      expect.unreachable("should have thrown");
+    } catch (err) {
+      expect(err).toBeInstanceOf(ValidationError);
+      expect((err as Error).message).toContain("Android SDK not found.");
+      expect((err as Error).message).toContain("ANDROID_HOME");
+    }
   });
 });

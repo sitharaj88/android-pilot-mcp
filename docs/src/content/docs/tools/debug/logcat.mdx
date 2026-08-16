@@ -1,15 +1,15 @@
 ---
 title: Logcat
-description: Read and filter Android logcat output, or clear the logcat buffer.
+description: Read and filter Android logcat output.
 ---
 
 import { Aside } from "@astrojs/starlight/components";
 
 ## Overview
 
-Read Android logcat with powerful filtering by tag, priority, time, and search string. Also supports clearing the buffer.
+Read Android logcat with powerful filtering by tag, priority, time, and search string. To clear the buffer instead, see [Clear Logcat](/android-pilot-mcp/tools/debug/logcat-clear/).
 
-## Read Parameters
+## Parameters
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
@@ -30,13 +30,12 @@ Read Android logcat with powerful filtering by tag, priority, time, and search s
 
 > Show logs since 2025-01-15 10:30:00
 
-> Clear the logcat buffer
-
 <Aside type="tip">
-  Clear logcat before reproducing a bug to reduce noise and make it easier to find relevant errors.
+  Clear logcat with the [`logcat_clear`](/android-pilot-mcp/tools/debug/logcat-clear/) tool before reproducing a bug to reduce noise and make it easier to find relevant errors.
 </Aside>
 
 ## Related Tools
 
+- [Clear Logcat](/android-pilot-mcp/tools/debug/logcat-clear/) — Clear the logcat buffer
 - [Screenshot](/android-pilot-mcp/tools/debug/screenshot/) — Capture visual state alongside logs
 - [Device Shell](/android-pilot-mcp/tools/debug/device-shell/) — Run `dumpsys` commands for deeper debugging

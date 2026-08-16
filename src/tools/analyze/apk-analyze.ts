@@ -1,41 +1,46 @@
 import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
 import { validateAbsolutePath } from "../../utils/validation.js";
 import { textResponse, errorResponse } from "../../utils/response.js";
+import { resolveApkAnalyzer } from "./apkanalyzer-path.js";
+import type { AnalyzeToolExtra } from "./types.js";
 
 interface ApkAnalyzeArgs {
   apkPath: string;
   detail?: "summary" | "full";
 }
 
-export async function apkAnalyze(args: ApkAnalyzeArgs, env: Environment) {
+export async function apkAnalyze(args: ApkAnalyzeArgs, env: Environment, extra?: AnalyzeToolExtra) {
   validateAbsolutePath(args.apkPath, "APK path");
 
   if (!existsSync(args.apkPath)) {
     return errorResponse(`APK not found at: ${args.apkPath}`);
   }
 
-  const apkanalyzer = join(env.androidHome, "cmdline-tools", "latest", "bin", "apkanalyzer");
+  const apkanalyzer = resolveApkAnalyzer(env.androidHome);
+  const signal = extra?.signal;
 
   const sections: string[] = [];
 
   // File size
   const fileSize = await executeCommand(apkanalyzer, ["apk", "file-size", args.apkPath], {
     timeout: 30_000,
+    signal,
   });
   if (fileSize.success) sections.push(`APK File Size: ${fileSize.stdout.trim()} bytes`);
 
   // Download size
   const dlSize = await executeCommand(apkanalyzer, ["apk", "download-size", args.apkPath], {
     timeout: 30_000,
+    signal,
   });
   if (dlSize.success) sections.push(`Download Size: ${dlSize.stdout.trim()} bytes`);
 
   // Manifest info
   const manifest = await executeCommand(apkanalyzer, ["manifest", "print", args.apkPath], {
     timeout: 30_000,
+    signal,
   });
 
   if (manifest.success) {
@@ -56,6 +61,7 @@ export async function apkAnalyze(args: ApkAnalyzeArgs, env: Environment) {
   // DEX reference count
   const dexRefs = await executeCommand(apkanalyzer, ["dex", "references", args.apkPath], {
     timeout: 30_000,
+    signal,
   });
   if (dexRefs.success) sections.push(`\nDEX References:\n${dexRefs.stdout.trim()}`);
 
@@ -63,6 +69,7 @@ export async function apkAnalyze(args: ApkAnalyzeArgs, env: Environment) {
     // Full file listing
     const files = await executeCommand(apkanalyzer, ["files", "list", args.apkPath], {
       timeout: 30_000,
+      signal,
     });
     if (files.success) {
       const fileList = files.stdout.trim().split("\n");

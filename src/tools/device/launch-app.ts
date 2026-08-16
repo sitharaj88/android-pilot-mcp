@@ -1,7 +1,8 @@
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { validatePackageName } from "../../utils/validation.js";
-import { textResponse, errorResponse } from "../../utils/response.js";
+import { validatePackageName, validateDeviceId } from "../../utils/validation.js";
+import { textResponse, errorResponse, ToolResponse } from "../../utils/response.js";
+import type { ToolExtra } from "./types.js";
 
 interface LaunchAppArgs {
   packageName: string;
@@ -9,11 +10,16 @@ interface LaunchAppArgs {
   deviceId?: string;
 }
 
-export async function launchApp(args: LaunchAppArgs, env: Environment) {
+export async function launchApp(
+  args: LaunchAppArgs,
+  env: Environment,
+  extra?: ToolExtra,
+): Promise<ToolResponse> {
   const packageName = validatePackageName(args.packageName);
+  const deviceId = args.deviceId ? validateDeviceId(args.deviceId) : undefined;
 
   const adbArgs: string[] = [];
-  if (args.deviceId) adbArgs.push("-s", args.deviceId);
+  if (deviceId) adbArgs.push("-s", deviceId);
 
   if (args.activityName) {
     adbArgs.push("shell", "am", "start", "-n", `${packageName}/${args.activityName}`);
@@ -31,6 +37,7 @@ export async function launchApp(args: LaunchAppArgs, env: Environment) {
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 15_000,
+    signal: extra?.signal,
   });
 
   if (!result.success) {

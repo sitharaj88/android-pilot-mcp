@@ -9,34 +9,62 @@ export async function executeCommand(
   args: string[],
   options: ExecOptions = {},
 ): Promise<ExecResult> {
-  const { cwd, timeout = 120_000, maxBuffer = 10 * 1024 * 1024, env: extraEnv } = options;
+  const { cwd, timeout = 120_000, maxBuffer = 10 * 1024 * 1024, env: extraEnv, signal } = options;
+
+  if (signal?.aborted) {
+    return {
+      success: false,
+      stdout: "",
+      stderr: "Command cancelled.",
+      exitCode: null,
+      timedOut: false,
+    };
+  }
+
+  const controller = new AbortController();
+  let didTimeout = false;
+  const onExternalAbort = () => controller.abort();
+  signal?.addEventListener("abort", onExternalAbort, { once: true });
+
+  const timer = setTimeout(() => {
+    didTimeout = true;
+    controller.abort();
+  }, timeout);
 
   try {
     const { stdout, stderr } = await execFileAsync(command, args, {
       cwd,
-      timeout,
       maxBuffer,
       encoding: "utf-8",
       env: { ...process.env, ...extraEnv },
+      signal: controller.signal,
     });
     return { success: true, stdout, stderr, exitCode: 0, timedOut: false };
   } catch (err: unknown) {
     const e = err as {
       stdout?: string;
       stderr?: string;
-      code?: number;
+      code?: number | string;
       killed?: boolean;
       signal?: string;
       message?: string;
     };
-    const timedOut = e.killed === true && e.signal === "SIGTERM";
+    const cancelled = !didTimeout && signal?.aborted === true;
+    const stderr = didTimeout
+      ? `Command timed out${e.stderr ? `\n\n${e.stderr}` : ""}`
+      : cancelled
+        ? "Command cancelled."
+        : (e.stderr ?? e.message ?? "Unknown error");
     return {
       success: false,
       stdout: e.stdout ?? "",
-      stderr: e.stderr ?? (timedOut ? "Command timed out" : (e.message ?? "Unknown error")),
-      exitCode: e.code ?? null,
-      timedOut,
+      stderr,
+      exitCode: typeof e.code === "number" ? e.code : null,
+      timedOut: didTimeout,
     };
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", onExternalAbort);
   }
 }
 
@@ -60,7 +88,17 @@ export async function executeCommandWithStdin(
   stdinData: string,
   options: ExecOptions = {},
 ): Promise<ExecResult> {
-  const { cwd, timeout = 120_000, maxBuffer = 10 * 1024 * 1024, env: extraEnv } = options;
+  const { cwd, timeout = 120_000, maxBuffer = 10 * 1024 * 1024, env: extraEnv, signal } = options;
+
+  if (signal?.aborted) {
+    return {
+      success: false,
+      stdout: "",
+      stderr: "Command cancelled.",
+      exitCode: null,
+      timedOut: false,
+    };
+  }
 
   return new Promise((resolve) => {
     const child = spawn(command, args, {
@@ -71,12 +109,24 @@ export async function executeCommandWithStdin(
 
     let stdout = "";
     let stderr = "";
-    let killed = false;
+    let timedOut = false;
+    let cancelled = false;
 
     const timer = setTimeout(() => {
-      killed = true;
+      timedOut = true;
       child.kill("SIGTERM");
     }, timeout);
+
+    const onExternalAbort = () => {
+      cancelled = true;
+      child.kill("SIGTERM");
+    };
+    signal?.addEventListener("abort", onExternalAbort, { once: true });
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", onExternalAbort);
+    };
 
     child.stdout.setEncoding("utf-8");
     child.stderr.setEncoding("utf-8");
@@ -89,18 +139,18 @@ export async function executeCommandWithStdin(
     });
 
     child.on("close", (code) => {
-      clearTimeout(timer);
+      cleanup();
       resolve({
-        success: code === 0,
+        success: code === 0 && !cancelled,
         stdout,
-        stderr: killed ? "Command timed out" : stderr,
+        stderr: timedOut ? "Command timed out" : cancelled ? "Command cancelled." : stderr,
         exitCode: code,
-        timedOut: killed,
+        timedOut,
       });
     });
 
     child.on("error", (err) => {
-      clearTimeout(timer);
+      cleanup();
       resolve({
         success: false,
         stdout,
@@ -110,6 +160,7 @@ export async function executeCommandWithStdin(
       });
     });
 
+    child.stdin.on("error", () => {});
     child.stdin.write(stdinData);
     child.stdin.end();
   });

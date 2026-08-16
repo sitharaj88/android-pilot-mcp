@@ -1,57 +1,106 @@
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { textResponse } from "../../utils/response.js";
+import { structuredResponse } from "../../utils/response.js";
+import { validateDeviceId } from "../../utils/validation.js";
+import { DebugToolExtra } from "./types.js";
 
 interface DeviceInfoArgs {
   deviceId?: string;
 }
 
-const PROPERTIES = [
-  ["ro.product.model", "Model"],
-  ["ro.product.manufacturer", "Manufacturer"],
-  ["ro.build.version.release", "Android Version"],
-  ["ro.build.version.sdk", "API Level"],
-  ["ro.product.cpu.abi", "CPU ABI"],
-  ["ro.sf.lcd_density", "Screen Density"],
-  ["ro.build.display.id", "Build ID"],
-  ["ro.build.type", "Build Type"],
-  ["ro.hardware", "Hardware"],
-  ["dalvik.vm.heapsize", "Heap Size"],
-] as const;
+export interface DeviceInfoData {
+  model: string | null;
+  manufacturer: string | null;
+  androidVersion: string | null;
+  sdkLevel: number | null;
+  cpuAbi: string | null;
+  screenDensity: string | null;
+  buildId: string | null;
+  buildType: string | null;
+  hardware: string | null;
+  heapSize: string | null;
+  batteryLevel: number | null;
+  screenResolution: string | null;
+}
 
-export async function deviceInfo(args: DeviceInfoArgs, env: Environment) {
+const PROPERTIES = [
+  ["ro.product.model", "model", "Model"],
+  ["ro.product.manufacturer", "manufacturer", "Manufacturer"],
+  ["ro.build.version.release", "androidVersion", "Android Version"],
+  ["ro.build.version.sdk", "sdkLevel", "API Level"],
+  ["ro.product.cpu.abi", "cpuAbi", "CPU ABI"],
+  ["ro.sf.lcd_density", "screenDensity", "Screen Density"],
+  ["ro.build.display.id", "buildId", "Build ID"],
+  ["ro.build.type", "buildType", "Build Type"],
+  ["ro.hardware", "hardware", "Hardware"],
+  ["dalvik.vm.heapsize", "heapSize", "Heap Size"],
+] as const satisfies ReadonlyArray<readonly [string, keyof DeviceInfoData, string]>;
+
+export async function deviceInfo(args: DeviceInfoArgs, env: Environment, extra?: DebugToolExtra) {
+  if (args.deviceId) validateDeviceId(args.deviceId);
+
   const baseArgs: string[] = [];
   if (args.deviceId) baseArgs.push("-s", args.deviceId);
 
   const lines: string[] = [];
+  const data: DeviceInfoData = {
+    model: null,
+    manufacturer: null,
+    androidVersion: null,
+    sdkLevel: null,
+    cpuAbi: null,
+    screenDensity: null,
+    buildId: null,
+    buildType: null,
+    hardware: null,
+    heapSize: null,
+    batteryLevel: null,
+    screenResolution: null,
+  };
 
-  for (const [prop, label] of PROPERTIES) {
+  for (const [prop, key, label] of PROPERTIES) {
     const result = await executeCommand(env.adbPath, [...baseArgs, "shell", "getprop", prop], {
       timeout: 5_000,
+      signal: extra?.signal,
     });
-    const value = result.success ? result.stdout.trim() : "N/A";
-    lines.push(`${label}: ${value}`);
+    const value = result.success ? result.stdout.trim() : "";
+    lines.push(`${label}: ${value || "N/A"}`);
+
+    if (!value) continue;
+    if (key === "sdkLevel") {
+      const parsed = Number.parseInt(value, 10);
+      data.sdkLevel = Number.isNaN(parsed) ? null : parsed;
+    } else {
+      data[key] = value;
+    }
   }
 
   // Get battery info
   const batteryResult = await executeCommand(
     env.adbPath,
     [...baseArgs, "shell", "dumpsys", "battery"],
-    { timeout: 5_000 },
+    { timeout: 5_000, signal: extra?.signal },
   );
   if (batteryResult.success) {
     const levelMatch = batteryResult.stdout.match(/level:\s*(\d+)/);
-    if (levelMatch) lines.push(`Battery Level: ${levelMatch[1]}%`);
+    if (levelMatch) {
+      lines.push(`Battery Level: ${levelMatch[1]}%`);
+      data.batteryLevel = Number.parseInt(levelMatch[1], 10);
+    }
   }
 
   // Get screen resolution
   const wmResult = await executeCommand(env.adbPath, [...baseArgs, "shell", "wm", "size"], {
     timeout: 5_000,
+    signal: extra?.signal,
   });
   if (wmResult.success) {
     const sizeMatch = wmResult.stdout.match(/Physical size:\s*([\dx]+)/);
-    if (sizeMatch) lines.push(`Screen Resolution: ${sizeMatch[1]}`);
+    if (sizeMatch) {
+      lines.push(`Screen Resolution: ${sizeMatch[1]}`);
+      data.screenResolution = sizeMatch[1];
+    }
   }
 
-  return textResponse(lines.join("\n"));
+  return structuredResponse(lines.join("\n"), { ...data });
 }

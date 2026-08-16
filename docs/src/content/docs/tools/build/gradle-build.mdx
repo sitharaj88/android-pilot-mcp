@@ -30,6 +30,10 @@ Build an Android project using Gradle. Supports debug and release variants with 
   Use stacktrace when debugging build failures — it provides the full error trace instead of just the summary.
 </Aside>
 
+<Aside type="note">
+  On clients that support it, this tool reports MCP progress notifications while the build runs and can be cancelled mid-build. It also returns structured output (`success`, `exitCode`, `truncated`) alongside the human-readable build log.
+</Aside>
+
 ## Related Tools
 
 - [Gradle Clean](/android-pilot-mcp/tools/build/gradle-clean/) — Clean before rebuilding

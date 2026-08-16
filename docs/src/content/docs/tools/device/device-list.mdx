@@ -3,9 +3,15 @@ title: Device List
 description: List all connected Android devices and running emulators.
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 ## Overview
 
 Show all connected physical devices and running emulators with their serial numbers and connection status.
+
+<Aside type="note">
+  Returns structured output (a `devices` array with `id`, `state`, `type`, and `model`) alongside the human-readable summary, so clients can consume it programmatically.
+</Aside>
 
 ## Parameters
 

@@ -28,6 +28,17 @@ Just tell your AI editor what you want:
 
 No manual adb commands. No switching between terminal and IDE. Your AI editor handles it all.
 
+## What's New in 1.1.0
+
+- All 39 tools now use `registerTool()` with descriptive titles and [tool annotations](#tool-annotations--structured-output) (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) so clients can reason about a tool before calling it.
+- Structured, machine-readable output on key tools (`device_list`, `avd_list`, `app_permissions_list`, `device_info`, `gradle_build`, `gradle_list_tasks`, `lint_run`, `apk_permissions`) alongside the usual human-readable text.
+- New [MCP Resources](#mcp-resources) for live device state and new [MCP Prompts](#mcp-prompts) for common multi-step workflows.
+- Progress notifications, request cancellation, and elicitation confirmations for destructive actions — see [Progress, Cancellation & Confirmations](#progress-cancellation--confirmations).
+- Android SDK detection now falls back to the standard Linux (`~/Android/Sdk`) and Windows (`%LOCALAPPDATA%\Android\Sdk`) install locations, in addition to the macOS default.
+- A missing or misconfigured SDK no longer crashes the server — tools return a clean error telling you to set `ANDROID_HOME`.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full list of changes.
+
 ## 39 Tools Across 7 Categories
 
 | Category | Tools | What It Covers |
@@ -60,7 +71,7 @@ npm install -g android-pilot-mcp
 - **Android SDK** with platform-tools (adb), emulator, and command-line tools
 - **Java JDK** 17+ (for Gradle builds)
 
-The server looks for the Android SDK via `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or the macOS default `~/Library/Android/sdk`.
+The server looks for the Android SDK via `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or the platform default install location: `~/Library/Android/sdk` on macOS, `~/Android/Sdk` on Linux, or `%LOCALAPPDATA%\Android\Sdk` on Windows. If none of these resolve to a real directory, the server still starts — tools just return a clean error telling you to set `ANDROID_HOME` instead of crashing.
 
 ## Editor Setup
 
@@ -157,7 +168,7 @@ Any MCP client with stdio transport support works. Point it at `npx -y android-p
 | `device_info` | Get device model, OS version, screen density, and more |
 | `device_shell` | Execute an ADB shell command |
 | `ui_dump` | Dump UI hierarchy as XML via UI Automator |
-| `screen_record` | Record the screen as MP4 (up to 180 seconds) |
+| `screen_record` | Record the screen as MP4 (duration is clamped to 1-180 seconds) |
 
 ### Scaffolding
 
@@ -190,6 +201,42 @@ Any MCP client with stdio transport support works. Point it at `npx -y android-p
 | `sdk_list` | List installed or available SDK packages |
 | `sdk_install` | Install SDK packages (platforms, system images, build tools) |
 
+## MCP Resources
+
+Beyond tools, the server exposes read-only [MCP Resources](https://modelcontextprotocol.io/docs/concepts/resources) for live device state, so a client can read this data directly without invoking a tool call:
+
+| Resource URI | Description |
+|---------------|-------------|
+| `android://devices` | Currently connected devices and emulators (`adb devices -l`) |
+| `android://avds` | Available AVD names on this machine |
+| `android://logcat/{deviceId}` | Last 200 lines of logcat for a specific device |
+| `android://uidump/{deviceId}` | UI Automator XML hierarchy dump for a specific device |
+
+## MCP Prompts
+
+The server also ships ready-made [MCP Prompts](https://modelcontextprotocol.io/docs/concepts/prompts) — pre-written, parameterized instructions that chain multiple tools into a common workflow. Editors with prompt support can surface these as slash commands or quick actions:
+
+| Prompt | Description |
+|--------|-------------|
+| `debug-crash` | Reproduce, capture, and diagnose a crash for an installed app |
+| `setup-emulator` | Install a system image and create/start an AVD |
+| `install-and-test-apk` | Analyze, install, launch, and check logs for an APK |
+| `ui-inspect` | Capture the UI hierarchy and a screenshot to locate elements |
+| `performance-check` | Build release, inspect APK size, and watch runtime logs for perf issues |
+| `release-preflight` | Clean build, lint, and analyze the APK before a release |
+
+## Tool Annotations & Structured Output
+
+Every tool is registered with a `title` and MCP [tool annotations](https://modelcontextprotocol.io/docs/concepts/tools#tool-annotations) — `readOnlyHint`, `destructiveHint`, `idempotentHint`, and `openWorldHint` — so a client can tell at a glance whether a tool is safe to call automatically, destructive enough to confirm first, or interacts with something outside the local system (e.g. `adb_wifi_connect`, network SDK downloads).
+
+Several tools also return structured, machine-readable output (`outputSchema` / `structuredContent`) in addition to their human-readable text response: `device_list`, `avd_list`, `app_permissions_list`, `device_info`, `gradle_build`, `gradle_list_tasks`, `lint_run`, and `apk_permissions`.
+
+## Progress, Cancellation & Confirmations
+
+- **Progress notifications** — long-running tools (`gradle_build`, `emulator_start`, `sdk_install`, `screen_record`) send MCP progress notifications while they work, so a client can show live status instead of a silent wait.
+- **Cancellation** — those same tools accept an `AbortSignal` from the client, so an in-flight build, emulator boot, SDK install, or recording can be cancelled cleanly.
+- **Elicitation confirmations** — destructive operations (`app_clear_data`, overwriting an existing AVD with `avd_create`, and the license auto-accept in `sdk_install`) ask for confirmation via MCP elicitation on clients that support it. On clients that don't support elicitation, the server falls back to proceeding without a prompt rather than failing.
+
 ## Documentation
 
 Full documentation with guides, tool reference, and a prompt cookbook is available at:
@@ -199,6 +246,7 @@ Full documentation with guides, tool reference, and a prompt cookbook is availab
 Includes:
 - Step-by-step setup guides
 - Detailed tool reference for all 39 tools
+- MCP Resources and MCP Prompts reference
 - Prompt cookbook with 65+ copy-paste prompts
 - Real-world workflows (build, debug, deploy)
 - Architecture overview

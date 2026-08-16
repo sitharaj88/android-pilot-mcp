@@ -13,18 +13,30 @@ Android Pilot MCP searches for the Android SDK in this order:
 
 1. `ANDROID_HOME` environment variable
 2. `ANDROID_SDK_ROOT` environment variable
-3. macOS default: `~/Library/Android/sdk`
+3. The platform default install location, checked in an order tailored to the
+   current OS:
+   - **macOS:** `~/Library/Android/sdk`, then `~/Android/Sdk`, then
+     `%LOCALAPPDATA%\Android\Sdk`
+   - **Windows:** `%LOCALAPPDATA%\Android\Sdk`, then `~/Library/Android/sdk`,
+     then `~/Android/Sdk`
+   - **Linux:** `~/Android/Sdk`, then `~/Library/Android/sdk`, then
+     `%LOCALAPPDATA%\Android\Sdk`
+
+<Aside type="note">
+  If none of these resolve to a directory that exists, the server still starts. Every tool that needs the SDK returns a clean error asking you to set `ANDROID_HOME`, instead of the server crashing at startup.
+</Aside>
 
 ## Tool Paths
 
-The following tools are resolved from the SDK:
+The following tools are resolved from the SDK. `sdkmanager` and `avdmanager` are looked up across the common `cmdline-tools` layouts (`cmdline-tools/latest/bin`, `cmdline-tools/bin`, and the legacy `tools/bin`), since the exact path depends on how the command-line tools package was installed.
 
 | Tool | Path |
 |------|------|
 | `adb` | `$ANDROID_HOME/platform-tools/adb` |
 | `emulator` | `$ANDROID_HOME/emulator/emulator` |
-| `sdkmanager` | `$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager` |
-| `avdmanager` | `$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager` |
+| `sdkmanager` | `$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager` (falls back to `cmdline-tools/bin` or `tools/bin`) |
+| `avdmanager` | `$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager` (falls back to `cmdline-tools/bin` or `tools/bin`) |
+| `apkanalyzer` | Resolved the same way as `sdkmanager`/`avdmanager`, across the known `cmdline-tools` locations |
 
 ## Environment Variables
 
@@ -39,6 +51,15 @@ The following tools are resolved from the SDK:
 </Aside>
 
 ## Troubleshooting
+
+### "Android SDK not found. Set ANDROID_HOME..."
+
+None of `ANDROID_HOME`, `ANDROID_SDK_ROOT`, or the platform default paths pointed at a real directory. The server itself still starts, but every tool that touches the SDK will return this error until you set `ANDROID_HOME`:
+
+```bash
+export ANDROID_HOME=~/Library/Android/sdk   # macOS
+export ANDROID_HOME=~/Android/Sdk           # Linux
+```
 
 ### "adb not found"
 

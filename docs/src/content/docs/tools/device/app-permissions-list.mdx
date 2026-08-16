@@ -3,9 +3,15 @@ title: List App Permissions
 description: List all permissions for an installed app, showing granted and denied status.
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 ## Overview
 
 View every permission declared by an app and whether it's currently granted or denied.
+
+<Aside type="note">
+  Returns structured output (a `permissions` array of `{ name, granted }`) alongside the human-readable summary, so clients can consume it programmatically.
+</Aside>
 
 ## Parameters
 

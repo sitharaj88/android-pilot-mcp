@@ -4,6 +4,7 @@ import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
 import { errorResponse, execResultResponse } from "../../utils/response.js";
 import { validateAbsolutePath } from "../../utils/validation.js";
+import type { ToolExtra } from "./extra.js";
 
 interface GradleTaskArgs {
   projectDir: string;
@@ -11,7 +12,7 @@ interface GradleTaskArgs {
   args?: string[];
 }
 
-export async function runGradleTask(args: GradleTaskArgs, _env: Environment) {
+export async function runGradleTask(args: GradleTaskArgs, _env: Environment, extra: ToolExtra) {
   validateAbsolutePath(args.projectDir, "Project directory");
 
   const gradlew = join(args.projectDir, "gradlew");
@@ -26,6 +27,7 @@ export async function runGradleTask(args: GradleTaskArgs, _env: Environment) {
   const result = await executeCommand(gradlew, gradleArgs, {
     cwd: args.projectDir,
     timeout: 300_000,
+    signal: extra.signal,
   });
 
   return execResultResponse(result, {

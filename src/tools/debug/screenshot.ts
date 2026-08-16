@@ -1,15 +1,21 @@
 import { execFile } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { Environment } from "../../types.js";
-import { validateAbsolutePath } from "../../utils/validation.js";
+import { validateAbsolutePath, validateDeviceId } from "../../utils/validation.js";
 import { imageResponse, errorResponse } from "../../utils/response.js";
+import { DebugToolExtra } from "./types.js";
 
 interface ScreenshotArgs {
   deviceId?: string;
   savePath?: string;
 }
 
-export async function deviceScreenshot(args: ScreenshotArgs, env: Environment) {
+export async function deviceScreenshot(
+  args: ScreenshotArgs,
+  env: Environment,
+  extra?: DebugToolExtra,
+) {
+  if (args.deviceId) validateDeviceId(args.deviceId);
   if (args.savePath) {
     validateAbsolutePath(args.savePath, "Save path");
   }
@@ -23,7 +29,12 @@ export async function deviceScreenshot(args: ScreenshotArgs, env: Environment) {
       const _proc = execFile(
         env.adbPath,
         adbArgs,
-        { encoding: "buffer" as unknown as "utf-8", maxBuffer: 20 * 1024 * 1024, timeout: 15_000 },
+        {
+          encoding: "buffer" as unknown as "utf-8",
+          maxBuffer: 20 * 1024 * 1024,
+          timeout: 15_000,
+          signal: extra?.signal,
+        },
         (err, stdout) => {
           if (err) return reject(err);
           resolve(stdout as unknown as Buffer);

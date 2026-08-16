@@ -3,9 +3,15 @@ title: List Gradle Tasks
 description: List all available Gradle tasks in an Android project.
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 ## Overview
 
 Discover all Gradle tasks available in your project, optionally filtered by module.
+
+<Aside type="note">
+  Returns structured output (a `tasks` array with `name` and optional `description`) alongside the human-readable summary, so clients can consume it programmatically.
+</Aside>
 
 ## Parameters
 

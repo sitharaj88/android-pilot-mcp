@@ -30,6 +30,10 @@ Create a new Android emulator with a specific API level, device profile, and sys
   Use "List available SDK packages" first to find the right system image package string.
 </Aside>
 
+<Aside type="caution">
+  When `force: true` would overwrite an existing AVD with the same name, the server asks for confirmation on MCP clients that support elicitation before proceeding. Clients without elicitation support skip the prompt and overwrite directly.
+</Aside>
+
 ## Related Tools
 
 - [AVD List](/android-pilot-mcp/tools/device/avd-list/) — See existing AVDs

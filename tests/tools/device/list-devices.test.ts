@@ -50,6 +50,35 @@ describe("listDevices", () => {
     expect(text).toContain("192.168.1.5:5555");
   });
 
+  it("ignores daemon-startup noise lines instead of fabricating a device from them", async () => {
+    mockedExecuteCommand.mockResolvedValue(
+      mockSuccessResult(
+        "* daemon not running; starting now at tcp:5037\n* daemon started successfully\n" +
+          "List of devices attached\nemulator-5554          device product:sdk model:Pixel_6 transport_id:1\n\n",
+      ),
+    );
+
+    const result = await listDevices(env);
+
+    expect(result.structuredContent).toEqual({
+      devices: [{ id: "emulator-5554", state: "device", type: "emulator", model: "Pixel_6" }],
+    });
+  });
+
+  it("drops a single-token (malformed) line instead of fabricating a device or throwing", async () => {
+    mockedExecuteCommand.mockResolvedValue(
+      mockSuccessResult(
+        "List of devices attached\nemulator-5554          device product:sdk model:Pixel_6 transport_id:1\nsomegarbageline\n\n",
+      ),
+    );
+
+    const result = await listDevices(env);
+
+    expect(result.structuredContent).toEqual({
+      devices: [{ id: "emulator-5554", state: "device", type: "emulator", model: "Pixel_6" }],
+    });
+  });
+
   it("returns error when adb fails", async () => {
     mockedExecuteCommand.mockResolvedValue(mockFailureResult("adb: unable to connect", 1));
 
@@ -64,6 +93,40 @@ describe("listDevices", () => {
 
     expect(mockedExecuteCommand).toHaveBeenCalledWith(env.adbPath, ["devices", "-l"], {
       timeout: 10_000,
+      signal: undefined,
     });
+  });
+
+  it("returns structuredContent matching the devices output schema", async () => {
+    mockedExecuteCommand.mockResolvedValue(
+      mockSuccessResult(
+        "List of devices attached\nemulator-5554          device product:sdk model:Pixel_6 transport_id:1\n192.168.1.5:5555       device product:flame model:Pixel_4 transport_id:2\n\n",
+      ),
+    );
+
+    const result = await listDevices(env);
+
+    expect(result.structuredContent).toEqual({
+      devices: [
+        { id: "emulator-5554", state: "device", type: "emulator", model: "Pixel_6" },
+        { id: "192.168.1.5:5555", state: "device", type: "device", model: "Pixel_4" },
+      ],
+    });
+  });
+
+  it("returns an empty devices array in structuredContent when none connected", async () => {
+    mockedExecuteCommand.mockResolvedValue(mockSuccessResult("List of devices attached\n\n"));
+
+    const result = await listDevices(env);
+
+    expect(result.structuredContent).toEqual({ devices: [] });
+  });
+
+  it("does not set structuredContent on failure", async () => {
+    mockedExecuteCommand.mockResolvedValue(mockFailureResult("adb: unable to connect", 1));
+
+    const result = await listDevices(env);
+
+    expect(result.structuredContent).toBeUndefined();
   });
 });

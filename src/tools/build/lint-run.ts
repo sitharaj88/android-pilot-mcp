@@ -2,8 +2,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { textResponse, errorResponse } from "../../utils/response.js";
+import { errorResponse, structuredResponse } from "../../utils/response.js";
 import { validateAbsolutePath } from "../../utils/validation.js";
+import type { ToolExtra } from "./extra.js";
 
 interface LintRunArgs {
   projectDir: string;
@@ -11,7 +12,7 @@ interface LintRunArgs {
   fatal: boolean;
 }
 
-export async function lintRun(args: LintRunArgs, _env: Environment) {
+export async function lintRun(args: LintRunArgs, _env: Environment, extra: ToolExtra) {
   validateAbsolutePath(args.projectDir, "Project directory");
 
   const gradlew = join(args.projectDir, "gradlew");
@@ -25,6 +26,7 @@ export async function lintRun(args: LintRunArgs, _env: Environment) {
   const result = await executeCommand(gradlew, [task], {
     cwd: args.projectDir,
     timeout: 300_000,
+    signal: extra.signal,
   });
 
   // Try to read the lint results XML/HTML
@@ -65,8 +67,14 @@ export async function lintRun(args: LintRunArgs, _env: Environment) {
     (result.stdout.includes("Error:") || result.stderr.includes("Error:"));
 
   const text = output.join("\n");
+  const structured = { success: result.success, exitCode: result.exitCode };
+
   if (args.fatal && hasFatalIssues) {
-    return errorResponse(text);
+    return {
+      content: [{ type: "text" as const, text }],
+      isError: true,
+      structuredContent: structured,
+    };
   }
-  return textResponse(text);
+  return structuredResponse(text, structured);
 }

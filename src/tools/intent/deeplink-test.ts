@@ -1,7 +1,9 @@
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { validatePackageName } from "../../utils/validation.js";
+import { validatePackageName, validateDeviceId } from "../../utils/validation.js";
 import { textResponse, errorResponse } from "../../utils/response.js";
+import { validateDeeplinkUri, shellQuoteForDevice } from "./validation.js";
+import type { IntentToolExtra } from "./types.js";
 
 interface DeeplinkTestArgs {
   uri: string;
@@ -9,14 +11,30 @@ interface DeeplinkTestArgs {
   deviceId?: string;
 }
 
-export async function deeplinkTest(args: DeeplinkTestArgs, env: Environment) {
+export async function deeplinkTest(
+  args: DeeplinkTestArgs,
+  env: Environment,
+  extra?: IntentToolExtra,
+) {
+  validateDeeplinkUri(args.uri);
   if (args.packageName) {
     validatePackageName(args.packageName);
+  }
+  if (args.deviceId) {
+    validateDeviceId(args.deviceId);
   }
 
   const adbArgs: string[] = [];
   if (args.deviceId) adbArgs.push("-s", args.deviceId);
-  adbArgs.push("shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", args.uri);
+  adbArgs.push(
+    "shell",
+    "am",
+    "start",
+    "-a",
+    "android.intent.action.VIEW",
+    "-d",
+    shellQuoteForDevice(args.uri),
+  );
 
   if (args.packageName) {
     adbArgs.push("-p", args.packageName);
@@ -24,6 +42,7 @@ export async function deeplinkTest(args: DeeplinkTestArgs, env: Environment) {
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 15_000,
+    signal: extra?.signal,
   });
 
   if (!result.success || result.stdout.includes("Error")) {

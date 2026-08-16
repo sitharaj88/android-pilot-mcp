@@ -6,6 +6,7 @@ import {
   execResultResponse,
   truncateOutput,
   withErrorHandling,
+  structuredResponse,
 } from "../../src/utils/response.js";
 import { ValidationError } from "../../src/utils/validation.js";
 import { mockSuccessResult, mockFailureResult, mockTimeoutResult } from "../helpers/fixtures.js";
@@ -122,6 +123,42 @@ describe("truncateOutput", () => {
     const { text, truncated } = truncateOutput("long text here", 4);
     expect(text).toBe("long");
     expect(truncated).toBe(true);
+  });
+
+  it("is a no-op when byte length equals the limit exactly", () => {
+    const { text, truncated } = truncateOutput("abcd", 4);
+    expect(text).toBe("abcd");
+    expect(truncated).toBe(false);
+  });
+
+  it("does not split a multi-byte UTF-8 character", () => {
+    // "é" is 2 bytes in UTF-8 (0xC3 0xA9); cutting at byte 2 would split it.
+    const { text, truncated } = truncateOutput("héllo", 2);
+    expect(truncated).toBe(true);
+    expect(text).toBe("h");
+    expect(Buffer.byteLength(text, "utf8")).toBeLessThanOrEqual(2);
+  });
+
+  it("counts multi-byte characters by byte length, not string length", () => {
+    // Each "é" is 2 bytes, so "éé" is 4 bytes but only 2 chars.
+    const { text, truncated } = truncateOutput("éé", 4);
+    expect(text).toBe("éé");
+    expect(truncated).toBe(false);
+  });
+
+  it("truncates emoji (surrogate pair / multi-byte) text without leaving replacement characters", () => {
+    const { text } = truncateOutput("🎉🎉🎉", 5);
+    expect(text.includes("�")).toBe(false);
+    expect(Buffer.byteLength(text, "utf8")).toBeLessThanOrEqual(5);
+  });
+});
+
+describe("structuredResponse", () => {
+  it("returns text content plus structuredContent", () => {
+    const result = structuredResponse("summary text", { count: 3, ok: true });
+    expect(result.content).toEqual([{ type: "text", text: "summary text" }]);
+    expect(result.structuredContent).toEqual({ count: 3, ok: true });
+    expect(result.isError).toBeUndefined();
   });
 });
 

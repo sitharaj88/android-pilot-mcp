@@ -1,8 +1,9 @@
 import { existsSync } from "node:fs";
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { validateAbsolutePath } from "../../utils/validation.js";
-import { textResponse, errorResponse } from "../../utils/response.js";
+import { validateAbsolutePath, validateDeviceId } from "../../utils/validation.js";
+import { textResponse, errorResponse, ToolResponse } from "../../utils/response.js";
+import type { ToolExtra } from "./types.js";
 
 interface FilePushArgs {
   localPath: string;
@@ -10,19 +11,25 @@ interface FilePushArgs {
   deviceId?: string;
 }
 
-export async function filePush(args: FilePushArgs, env: Environment) {
+export async function filePush(
+  args: FilePushArgs,
+  env: Environment,
+  extra?: ToolExtra,
+): Promise<ToolResponse> {
   const localPath = validateAbsolutePath(args.localPath, "Local path");
+  const deviceId = args.deviceId ? validateDeviceId(args.deviceId) : undefined;
 
   if (!existsSync(localPath)) {
     return errorResponse(`Local file not found: ${localPath}`);
   }
 
   const adbArgs: string[] = [];
-  if (args.deviceId) adbArgs.push("-s", args.deviceId);
+  if (deviceId) adbArgs.push("-s", deviceId);
   adbArgs.push("push", localPath, args.remotePath);
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 60_000,
+    signal: extra?.signal,
   });
 
   if (!result.success) {
@@ -38,15 +45,21 @@ interface FilePullArgs {
   deviceId?: string;
 }
 
-export async function filePull(args: FilePullArgs, env: Environment) {
+export async function filePull(
+  args: FilePullArgs,
+  env: Environment,
+  extra?: ToolExtra,
+): Promise<ToolResponse> {
   const localPath = validateAbsolutePath(args.localPath, "Local path");
+  const deviceId = args.deviceId ? validateDeviceId(args.deviceId) : undefined;
 
   const adbArgs: string[] = [];
-  if (args.deviceId) adbArgs.push("-s", args.deviceId);
+  if (deviceId) adbArgs.push("-s", deviceId);
   adbArgs.push("pull", args.remotePath, localPath);
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 60_000,
+    signal: extra?.signal,
   });
 
   if (!result.success) {

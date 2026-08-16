@@ -3,9 +3,15 @@ title: AVD List
 description: List all available Android Virtual Devices (AVDs).
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 ## Overview
 
 Show all configured Android Virtual Devices on your system, whether running or stopped.
+
+<Aside type="note">
+  Returns structured output (an `avds` array with `name`, `device`, `path`, and `target`) alongside the human-readable summary, so clients can consume it programmatically.
+</Aside>
 
 ## Parameters
 

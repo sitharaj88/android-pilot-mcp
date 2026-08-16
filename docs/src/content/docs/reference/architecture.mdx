@@ -23,29 +23,43 @@ Android Pilot MCP implements the [Model Context Protocol](https://modelcontextpr
 
 Android Pilot uses **stdio transport** — the simplest and most compatible option. The server reads from stdin and writes to stdout.
 
+### Beyond Tools
+
+In addition to its 39 tools, the server registers the `logging` capability and exposes [MCP Resources](/android-pilot-mcp/reference/resources/) for read-only device state and [MCP Prompts](/android-pilot-mcp/reference/prompts/) for common multi-step workflows. Long-running tools also report MCP progress notifications and honor client-initiated cancellation via `AbortSignal`.
+
 ## Project Structure
 
 ```
 android-pilot-mcp/
 ├── src/
-│   ├── index.ts          # Entry point, MCP server setup
-│   ├── tools/            # Tool implementations
-│   │   ├── build.ts      # Gradle build tools
-│   │   ├── device.ts     # Device management tools
-│   │   ├── debug.ts      # Debugging tools
-│   │   ├── scaffold.ts   # Code scaffolding tools
-│   │   ├── analyze.ts    # APK analysis tools
-│   │   ├── intent.ts     # Intent and deep link tools
-│   │   └── sdk.ts        # SDK management tools
-│   ├── utils/            # Shared utilities
-│   │   ├── android-sdk.ts  # SDK path detection
-│   │   ├── exec.ts       # Command execution
-│   │   └── validation.ts # Input validation
-│   └── templates/        # Scaffolding templates
-├── tests/                # Vitest test suite
-├── docs/                 # This documentation site
-└── build/                # Compiled output
+│   ├── index.ts           # Entry point: MCP server setup, capability registration
+│   ├── environment.ts     # Android SDK detection (ANDROID_HOME, platform fallbacks)
+│   ├── executor.ts        # Command execution (spawn, stdin piping, cancellation)
+│   ├── types.ts           # Shared TypeScript types (Environment, etc.)
+│   ├── tools/              # Tool implementations, one directory per category
+│   │   ├── build/          # Gradle build, task runner, clean, dependencies, lint
+│   │   ├── device/         # Emulators, AVDs, APK install, app lifecycle, WiFi ADB, file transfer
+│   │   ├── debug/          # Logcat, screenshots, screen recording, UI dump, shell
+│   │   ├── scaffold/       # Project/activity/fragment/Compose screen generation
+│   │   ├── analyze/        # APK inspection and permissions
+│   │   ├── intent/         # Intents, broadcasts, deep links
+│   │   └── sdk/            # SDK package listing and installation
+│   │       └── index.ts    # registerXTools(server, env) entry point per category
+│   ├── resources/          # MCP Resources (android://devices, android://avds, ...)
+│   │   └── index.ts
+│   ├── prompts/             # MCP Prompts (debug-crash, setup-emulator, ...)
+│   │   └── index.ts
+│   ├── utils/               # Shared utilities
+│   │   ├── logger.ts        # Structured logging + MCP logging capability
+│   │   ├── response.ts      # Response helpers, output truncation, error wrapping
+│   │   └── validation.ts    # Input validation (paths, package names, device IDs, shell args)
+│   └── templates/           # Scaffolding templates (.tmpl files for Kotlin/XML/Gradle)
+├── tests/                   # Vitest test suite, mirrors the src/ layout
+├── docs/                    # This documentation site (Astro Starlight)
+└── build/                   # Compiled output (tsc + copied templates)
 ```
+
+Each category directory under `src/tools/` exports a `registerXTools(server, env)` function from its `index.ts` that calls `server.registerTool()` for every tool in that category, with a `title`, `inputSchema`, optional `outputSchema`, and MCP tool annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`). These are all called from `src/index.ts`, alongside `registerResources()` and `registerPrompts()`.
 
 ## Security Model
 

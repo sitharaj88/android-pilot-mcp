@@ -1,7 +1,8 @@
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { validateShellCommand } from "../../utils/validation.js";
+import { validateDeviceId, validateShellCommand } from "../../utils/validation.js";
 import { OUTPUT_LIMITS, truncateOutput } from "../../utils/response.js";
+import { DebugToolExtra } from "./types.js";
 
 interface DeviceShellArgs {
   command: string;
@@ -13,8 +14,9 @@ interface DeviceShellArgs {
  * connected Android device. It is intentionally permissive by design.
  * Only basic length and null-byte validation is applied.
  */
-export async function deviceShell(args: DeviceShellArgs, env: Environment) {
+export async function deviceShell(args: DeviceShellArgs, env: Environment, extra: DebugToolExtra) {
   const command = validateShellCommand(args.command);
+  if (args.deviceId) validateDeviceId(args.deviceId);
 
   const adbArgs: string[] = [];
   if (args.deviceId) adbArgs.push("-s", args.deviceId);
@@ -22,6 +24,7 @@ export async function deviceShell(args: DeviceShellArgs, env: Environment) {
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 30_000,
+    signal: extra.signal,
   });
 
   const { text: output, truncated } = truncateOutput(result.stdout, OUTPUT_LIMITS.shellOutput);

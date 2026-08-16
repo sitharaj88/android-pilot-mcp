@@ -9,6 +9,8 @@ import { Aside } from "@astrojs/starlight/components";
 
 Start an emulator and wait for it to boot. Supports cold boot, headless mode, and data wipe options.
 
+The tool diffs `adb devices` before and after launching to identify the exact serial (e.g. `emulator-5554`) assigned to the emulator it just started, and polls that specific device with `adb -s <serial>` until `sys.boot_completed` is set. This means the reported result — and any boot-completion check — always refers to the emulator this call started, even if other emulators are already running.
+
 ## Parameters
 
 | Parameter | Type | Required | Default | Description |
@@ -28,6 +30,10 @@ Start an emulator and wait for it to boot. Supports cold boot, headless mode, an
 
 <Aside type="tip">
   Use headless mode (`noWindow`) for CI/CD environments where no display is available.
+</Aside>
+
+<Aside type="note">
+  On clients that support it, this tool reports MCP progress notifications while it waits for the emulator to attach and boot, and can be cancelled mid-wait.
 </Aside>
 
 ## Related Tools

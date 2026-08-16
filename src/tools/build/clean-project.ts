@@ -4,12 +4,13 @@ import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
 import { errorResponse, execResultResponse } from "../../utils/response.js";
 import { validateAbsolutePath } from "../../utils/validation.js";
+import type { ToolExtra } from "./extra.js";
 
 interface CleanProjectArgs {
   projectDir: string;
 }
 
-export async function cleanProject(args: CleanProjectArgs, _env: Environment) {
+export async function cleanProject(args: CleanProjectArgs, _env: Environment, extra: ToolExtra) {
   validateAbsolutePath(args.projectDir, "Project directory");
 
   const gradlew = join(args.projectDir, "gradlew");
@@ -22,6 +23,7 @@ export async function cleanProject(args: CleanProjectArgs, _env: Environment) {
   const result = await executeCommand(gradlew, ["clean"], {
     cwd: args.projectDir,
     timeout: 120_000,
+    signal: extra.signal,
   });
 
   return execResultResponse(result, {

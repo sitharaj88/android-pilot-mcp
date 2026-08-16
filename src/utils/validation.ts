@@ -66,6 +66,24 @@ export function validateSdkPackage(pkg: string): string {
   return pkg;
 }
 
+// Includes [, ], and % to support IPv6 adb serials, e.g. "[fe80::1]:5555" or
+// "fe80::1%wlan0:5555" (link-local addresses with a zone index).
+const DEVICE_ID_RE = /^[a-zA-Z0-9._:%[\]-]+$/;
+export const DEVICE_ID_MAX_LENGTH = 64;
+
+export function validateDeviceId(id: string): string {
+  if (!id || id.length > DEVICE_ID_MAX_LENGTH) {
+    throw new ValidationError(`Device ID must be 1-${DEVICE_ID_MAX_LENGTH} characters.`);
+  }
+  if (!DEVICE_ID_RE.test(id)) {
+    throw new ValidationError(
+      `Invalid device ID: "${id}". ` +
+        `Only letters, digits, dots, underscores, colons, hyphens, brackets, and "%" are allowed.`,
+    );
+  }
+  return id;
+}
+
 export const DEVICE_SHELL_MAX_LENGTH = 4096;
 
 export function validateShellCommand(command: string): string {

@@ -1,0 +1,58 @@
+---
+title: MCP Prompts
+description: Ready-made MCP Prompts that chain Android Pilot MCP tools into common workflows.
+sidebar:
+  order: 4
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Android Pilot MCP ships six [MCP Prompts](https://modelcontextprotocol.io/docs/concepts/prompts) — pre-written, parameterized instructions that walk an AI editor through a common multi-tool workflow. Each prompt takes a few arguments and returns a single user message describing the steps to take, in order, using the server's own tools.
+
+<Aside type="tip">
+  Prompts are a starting point, not a fixed script. The instructions tell the editor which tools to call and in what order, but it still reasons about the actual output at each step (e.g. deciding whether a crash trace points at your code or a third-party library).
+</Aside>
+
+Clients with prompt support typically surface these as slash commands or a quick-pick menu. Check your editor's MCP documentation for how it lists prompts.
+
+## Available Prompts
+
+| Prompt | Arguments | Description |
+|--------|-----------|--------------|
+| `debug-crash` | `packageName` (required), `deviceId` (optional) | Reproduce, capture, and diagnose a crash for an installed app |
+| `setup-emulator` | `apiLevel` (optional, default `35`), `deviceProfile` (optional, default `pixel_6`) | Install a system image and create/start an AVD |
+| `install-and-test-apk` | `apkPath` (required), `packageName` (optional) | Analyze, install, launch, and check logs for an APK |
+| `ui-inspect` | `deviceId` (optional) | Capture the UI hierarchy and a screenshot to locate elements |
+| `performance-check` | `packageName` (required), `deviceId` (optional) | Build release, inspect APK size, and watch runtime logs for perf issues |
+| `release-preflight` | `module` (optional, e.g. `:app`) | Clean build, lint, and analyze the APK before a release |
+
+### `debug-crash`
+
+Confirms the target device is connected, clears logcat, relaunches the app to reproduce the crash, captures the error-priority stack trace filtered to the package name, and asks for a concrete code fix with a verification plan (rebuild, reinstall, repeat).
+
+### `setup-emulator`
+
+Checks whether the requested system image is already installed via `sdk_list`, installs it with `sdk_install` if missing, creates the AVD with `avd_create`, starts it with `emulator_start` (headless by default for CI-style use), and confirms boot with `device_list`.
+
+### `install-and-test-apk`
+
+Runs `apk_analyze` to confirm package name and SDK levels, picks a target device if more than one is connected, installs with `apk_install` (reinstall + grant permissions), launches with `app_launch`, and checks logcat for a clean launch.
+
+### `ui-inspect`
+
+Combines `ui_dump` and `device_screenshot` so you can cross-reference view bounds from the XML dump against the visual screenshot to pinpoint an element's resource-id or coordinates.
+
+### `performance-check`
+
+Produces a release build with `gradle_build`, inspects the resulting APK with `apk_analyze`, installs and launches it, then watches logcat at warning priority for ANRs, GC churn, strict-mode violations, or dropped frames.
+
+### `release-preflight`
+
+A go/no-go checklist: `gradle_clean`, a release `gradle_build`, `lint_run` with `fatal: true`, and a full-detail `apk_analyze` to confirm version metadata before shipping.
+
+## Related
+
+- [MCP Resources](/android-pilot-mcp/reference/resources/) — read-only live device state
+- [Prompt Cookbook](/android-pilot-mcp/guides/prompts-quick-reference/) — copy-paste natural-language prompts for every tool, distinct from the MCP Prompts above

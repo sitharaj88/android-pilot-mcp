@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { promisify } from "node:util";
 
 // vi.hoisted ensures these are available when vi.mock factory runs (hoisted)
@@ -24,6 +24,10 @@ import { executeCommand, spawnDetached, executeCommandWithStdin } from "../src/e
 describe("executeCommand", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("returns success result on successful command", async () => {
@@ -54,7 +58,7 @@ describe("executeCommand", () => {
     expect(result.timedOut).toBe(false);
   });
 
-  it("detects timeout via SIGTERM", async () => {
+  it("does not report timedOut for an external SIGTERM unrelated to our own timer", async () => {
     const err = Object.assign(new Error("killed"), {
       killed: true,
       signal: "SIGTERM",
@@ -64,10 +68,81 @@ describe("executeCommand", () => {
     });
     mockExecFileAsync.mockRejectedValue(err);
 
-    const result = await executeCommand("slow", ["cmd"]);
+    const result = await executeCommand("slow", ["cmd"], { timeout: 120_000 });
+    expect(result.success).toBe(false);
+    expect(result.timedOut).toBe(false);
+  });
+
+  it("marks timedOut when our own timer elapses", async () => {
+    vi.useFakeTimers();
+    let capturedSignal: AbortSignal | undefined;
+    mockExecFileAsync.mockImplementation(
+      (_cmd: string, _args: string[], opts: { signal: AbortSignal }) => {
+        capturedSignal = opts.signal;
+        return new Promise((_resolve, reject) => {
+          opts.signal.addEventListener("abort", () => {
+            reject(
+              Object.assign(new Error("aborted"), {
+                killed: true,
+                signal: "SIGTERM",
+                code: null,
+                stdout: "",
+                stderr: "",
+              }),
+            );
+          });
+        });
+      },
+    );
+
+    const resultPromise = executeCommand("slow", ["cmd"], { timeout: 1000 });
+    await vi.advanceTimersByTimeAsync(1000);
+    const result = await resultPromise;
+
+    expect(capturedSignal?.aborted).toBe(true);
     expect(result.success).toBe(false);
     expect(result.timedOut).toBe(true);
     expect(result.stderr).toBe("Command timed out");
+  });
+
+  it("cancels via an external AbortSignal without reporting a timeout", async () => {
+    const controller = new AbortController();
+    mockExecFileAsync.mockImplementation(
+      (_cmd: string, _args: string[], opts: { signal: AbortSignal }) => {
+        return new Promise((_resolve, reject) => {
+          opts.signal.addEventListener("abort", () => {
+            reject(
+              Object.assign(new Error("aborted"), {
+                killed: true,
+                signal: "SIGTERM",
+                code: null,
+                stdout: "",
+                stderr: "",
+              }),
+            );
+          });
+        });
+      },
+    );
+
+    const resultPromise = executeCommand("slow", ["cmd"], { signal: controller.signal });
+    controller.abort();
+    const result = await resultPromise;
+
+    expect(result.success).toBe(false);
+    expect(result.timedOut).toBe(false);
+    expect(result.stderr).toContain("cancel");
+  });
+
+  it("short-circuits when the signal is already aborted", async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    const result = await executeCommand("slow", ["cmd"], { signal: controller.signal });
+    expect(result.success).toBe(false);
+    expect(result.timedOut).toBe(false);
+    expect(result.stderr).toContain("cancel");
+    expect(mockExecFileAsync).not.toHaveBeenCalled();
   });
 
   it("passes options through", async () => {
@@ -84,13 +159,26 @@ describe("executeCommand", () => {
       ["arg"],
       expect.objectContaining({
         cwd: "/tmp",
-        timeout: 5000,
         maxBuffer: 1024,
+        signal: expect.any(AbortSignal),
       }),
     );
   });
 
-  it("uses default timeout and maxBuffer", async () => {
+  it("forwards an external AbortSignal into the execFile call", async () => {
+    mockExecFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
+    const controller = new AbortController();
+
+    await executeCommand("cmd", ["arg"], { signal: controller.signal });
+
+    expect(mockExecFileAsync).toHaveBeenCalledWith(
+      "cmd",
+      ["arg"],
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+  });
+
+  it("uses default maxBuffer", async () => {
     mockExecFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
 
     await executeCommand("cmd", []);
@@ -99,7 +187,6 @@ describe("executeCommand", () => {
       "cmd",
       [],
       expect.objectContaining({
-        timeout: 120_000,
         maxBuffer: 10 * 1024 * 1024,
       }),
     );
@@ -111,6 +198,64 @@ describe("executeCommand", () => {
     const result = await executeCommand("cmd", []);
     expect(result.success).toBe(false);
     expect(result.stderr).toBe("generic error");
+  });
+
+  it("coerces a non-numeric error code (e.g. ABORT_ERR) to null instead of passing it through", async () => {
+    const err = Object.assign(new Error("The operation was aborted"), {
+      code: "ABORT_ERR",
+      stdout: "",
+      stderr: "",
+      killed: true,
+      signal: "SIGTERM",
+    });
+    mockExecFileAsync.mockRejectedValue(err);
+
+    const result = await executeCommand("cmd", []);
+    expect(result.success).toBe(false);
+    expect(result.exitCode).toBeNull();
+    expect(typeof result.exitCode).not.toBe("string");
+  });
+
+  it("coerces the maxBuffer overrun error code to null", async () => {
+    const err = Object.assign(new Error("stdout maxBuffer exceeded"), {
+      code: "ERR_CHILD_PROCESS_STDIO_MAXBUFFER",
+      stdout: "partial",
+      stderr: "",
+    });
+    mockExecFileAsync.mockRejectedValue(err);
+
+    const result = await executeCommand("cmd", []);
+    expect(result.success).toBe(false);
+    expect(result.exitCode).toBeNull();
+  });
+
+  it("preserves the child's captured stderr on timeout instead of discarding it", async () => {
+    vi.useFakeTimers();
+    mockExecFileAsync.mockImplementation(
+      (_cmd: string, _args: string[], opts: { signal: AbortSignal }) => {
+        return new Promise((_resolve, reject) => {
+          opts.signal.addEventListener("abort", () => {
+            reject(
+              Object.assign(new Error("aborted"), {
+                killed: true,
+                signal: "SIGTERM",
+                code: null,
+                stdout: "",
+                stderr: "some real error output from the child process",
+              }),
+            );
+          });
+        });
+      },
+    );
+
+    const resultPromise = executeCommand("slow", ["cmd"], { timeout: 1000 });
+    await vi.advanceTimersByTimeAsync(1000);
+    const result = await resultPromise;
+
+    expect(result.timedOut).toBe(true);
+    expect(result.stderr).toContain("Command timed out");
+    expect(result.stderr).toContain("some real error output from the child process");
   });
 });
 
@@ -138,7 +283,7 @@ describe("spawnDetached", () => {
 
 describe("executeCommandWithStdin", () => {
   it("writes stdin data and returns result", async () => {
-    const mockStdin = { write: vi.fn(), end: vi.fn() };
+    const mockStdin = { write: vi.fn(), end: vi.fn(), on: vi.fn() };
     const mockStdout = {
       setEncoding: vi.fn(),
       on: vi.fn((event: string, cb: (data: string) => void) => {
@@ -165,5 +310,49 @@ describe("executeCommandWithStdin", () => {
     expect(result.stdout).toBe("output");
     expect(mockStdin.write).toHaveBeenCalledWith("input data");
     expect(mockStdin.end).toHaveBeenCalled();
+  });
+
+  it("kills the child and reports cancellation when aborted via an external signal", async () => {
+    const controller = new AbortController();
+    const mockStdin = { write: vi.fn(), end: vi.fn(), on: vi.fn() };
+    const mockStdout = { setEncoding: vi.fn(), on: vi.fn() };
+    const mockStderr = { setEncoding: vi.fn(), on: vi.fn() };
+    let closeCb: ((code: number) => void) | undefined;
+    const mockChild = {
+      stdin: mockStdin,
+      stdout: mockStdout,
+      stderr: mockStderr,
+      on: vi.fn((event: string, cb: (code: number) => void) => {
+        if (event === "close") closeCb = cb;
+      }),
+      kill: vi.fn(() => {
+        closeCb?.(null as unknown as number);
+      }),
+    };
+    mockSpawn.mockReturnValue(mockChild);
+
+    const resultPromise = executeCommandWithStdin("cmd", ["arg"], "input", {
+      signal: controller.signal,
+    });
+    controller.abort();
+    const result = await resultPromise;
+
+    expect(mockChild.kill).toHaveBeenCalledWith("SIGTERM");
+    expect(result.success).toBe(false);
+    expect(result.timedOut).toBe(false);
+    expect(result.stderr).toContain("cancel");
+  });
+
+  it("short-circuits when the signal is already aborted before spawning", async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    const result = await executeCommandWithStdin("cmd", ["arg"], "input", {
+      signal: controller.signal,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.stderr).toContain("cancel");
+    expect(mockSpawn).not.toHaveBeenCalled();
   });
 });

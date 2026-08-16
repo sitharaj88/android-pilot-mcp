@@ -8,110 +8,181 @@ import { listGradleTasks } from "./list-tasks.js";
 import { cleanProject } from "./clean-project.js";
 import { showDependencies } from "./manage-dependencies.js";
 import { lintRun } from "./lint-run.js";
+import type { ToolExtra } from "./extra.js";
 
 export function registerBuildTools(server: McpServer, env: Environment): void {
-  server.tool(
+  server.registerTool(
     "gradle_build",
-    "Run a Gradle build for an Android project. Supports debug/release variants and optional module targeting",
     {
-      projectDir: z
-        .string()
-        .describe("Absolute path to the Android project root directory"),
-      variant: z
-        .enum(["debug", "release"])
-        .default("debug")
-        .describe("Build variant"),
-      module: z
-        .string()
-        .optional()
-        .describe("Specific module to build, e.g. ':app'. Omit for root project"),
-      stacktrace: z
-        .boolean()
-        .default(false)
-        .describe("Include full stacktrace on error"),
+      title: "Run Gradle Build",
+      description:
+        "Run a Gradle build for an Android project. Supports debug/release variants and optional module targeting",
+      inputSchema: {
+        projectDir: z
+          .string()
+          .describe("Absolute path to the Android project root directory"),
+        variant: z
+          .enum(["debug", "release"])
+          .default("debug")
+          .describe("Build variant"),
+        module: z
+          .string()
+          .optional()
+          .describe("Specific module to build, e.g. ':app'. Omit for root project"),
+        stacktrace: z
+          .boolean()
+          .default(false)
+          .describe("Include full stacktrace on error"),
+      },
+      outputSchema: {
+        success: z.boolean(),
+        exitCode: z.number().nullable(),
+        truncated: z.boolean().optional(),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => runGradleBuild(args, env)),
+    withErrorHandling(async (args, extra: ToolExtra) => runGradleBuild(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "gradle_task",
-    "Run an arbitrary Gradle task in an Android project",
     {
-      projectDir: z
-        .string()
-        .describe("Absolute path to the Android project root directory"),
-      task: z
-        .string()
-        .describe("Gradle task to run, e.g. 'test', 'lint', ':app:connectedAndroidTest'"),
-      args: z
-        .array(z.string())
-        .optional()
-        .describe("Additional Gradle arguments, e.g. ['--info', '-Pfoo=bar']"),
+      title: "Run Gradle Task",
+      description: "Run an arbitrary Gradle task in an Android project",
+      inputSchema: {
+        projectDir: z
+          .string()
+          .describe("Absolute path to the Android project root directory"),
+        task: z
+          .string()
+          .describe("Gradle task to run, e.g. 'test', 'lint', ':app:connectedAndroidTest'"),
+        args: z
+          .array(z.string())
+          .optional()
+          .describe("Additional Gradle arguments, e.g. ['--info', '-Pfoo=bar']"),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => runGradleTask(args, env)),
+    withErrorHandling(async (args, extra: ToolExtra) => runGradleTask(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "gradle_list_tasks",
-    "List all available Gradle tasks in an Android project",
     {
-      projectDir: z
-        .string()
-        .describe("Absolute path to the Android project root directory"),
-      module: z
-        .string()
-        .optional()
-        .describe("Specific module to list tasks for"),
+      title: "List Gradle Tasks",
+      description: "List all available Gradle tasks in an Android project",
+      inputSchema: {
+        projectDir: z
+          .string()
+          .describe("Absolute path to the Android project root directory"),
+        module: z
+          .string()
+          .optional()
+          .describe("Specific module to list tasks for"),
+      },
+      outputSchema: {
+        tasks: z.array(
+          z.object({
+            name: z.string(),
+            description: z.string().optional(),
+          }),
+        ),
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => listGradleTasks(args, env)),
+    withErrorHandling(async (args, extra: ToolExtra) => listGradleTasks(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "gradle_clean",
-    "Clean the build output of an Android project",
     {
-      projectDir: z
-        .string()
-        .describe("Absolute path to the Android project root directory"),
+      title: "Clean Gradle Build",
+      description: "Clean the build output of an Android project",
+      inputSchema: {
+        projectDir: z
+          .string()
+          .describe("Absolute path to the Android project root directory"),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    withErrorHandling(async (args) => cleanProject(args, env)),
+    withErrorHandling(async (args, extra: ToolExtra) => cleanProject(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "gradle_dependencies",
-    "Show the dependency tree for an Android project module",
     {
-      projectDir: z
-        .string()
-        .describe("Absolute path to the Android project root directory"),
-      module: z
-        .string()
-        .default(":app")
-        .describe("Module to show dependencies for"),
-      configuration: z
-        .string()
-        .optional()
-        .describe("Configuration to show, e.g. 'debugCompileClasspath'"),
+      title: "Show Gradle Dependencies",
+      description: "Show the dependency tree for an Android project module",
+      inputSchema: {
+        projectDir: z
+          .string()
+          .describe("Absolute path to the Android project root directory"),
+        module: z
+          .string()
+          .default(":app")
+          .describe("Module to show dependencies for"),
+        configuration: z
+          .string()
+          .optional()
+          .describe("Configuration to show, e.g. 'debugCompileClasspath'"),
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => showDependencies(args, env)),
+    withErrorHandling(async (args, extra: ToolExtra) => showDependencies(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "lint_run",
-    "Run Android Lint analysis on a project and return warnings, errors, and suggestions with file locations",
     {
-      projectDir: z
-        .string()
-        .describe("Absolute path to the Android project root directory"),
-      module: z
-        .string()
-        .default(":app")
-        .describe("Module to lint"),
-      fatal: z
-        .boolean()
-        .default(false)
-        .describe("If true, report as error when fatal lint issues are found"),
+      title: "Run Android Lint",
+      description:
+        "Run Android Lint analysis on a project and return warnings, errors, and suggestions with file locations",
+      inputSchema: {
+        projectDir: z
+          .string()
+          .describe("Absolute path to the Android project root directory"),
+        module: z.string().default(":app").describe("Module to lint"),
+        fatal: z
+          .boolean()
+          .default(false)
+          .describe("If true, report as error when fatal lint issues are found"),
+      },
+      outputSchema: {
+        success: z.boolean(),
+        exitCode: z.number().nullable(),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => lintRun(args, env)),
+    withErrorHandling(async (args, extra: ToolExtra) => lintRun(args, env, extra)),
   );
 }

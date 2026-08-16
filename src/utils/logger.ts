@@ -1,4 +1,16 @@
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
 export type LogLevel = "debug" | "info" | "warn" | "error";
+
+type McpLogLevel =
+  | "debug"
+  | "info"
+  | "notice"
+  | "warning"
+  | "error"
+  | "critical"
+  | "alert"
+  | "emergency";
 
 const LEVEL_ORDER: Record<LogLevel, number> = {
   debug: 0,
@@ -7,9 +19,17 @@ const LEVEL_ORDER: Record<LogLevel, number> = {
   error: 3,
 };
 
+const MCP_LEVEL: Record<LogLevel, McpLogLevel> = {
+  debug: "debug",
+  info: "info",
+  warn: "warning",
+  error: "error",
+};
+
 const PREFIX = "[android-pilot]";
 
 let currentLevel: LogLevel = parseLevel(process.env.LOG_LEVEL);
+let mcpServer: McpServer | undefined;
 
 function parseLevel(value: string | undefined): LogLevel {
   if (value && value in LEVEL_ORDER) return value as LogLevel;
@@ -29,29 +49,39 @@ function formatMessage(level: LogLevel, message: string, data?: Record<string, u
   return base;
 }
 
+function emitMcpLog(level: LogLevel, message: string, data?: Record<string, unknown>): void {
+  if (!mcpServer) return;
+  try {
+    const payload = data && Object.keys(data).length > 0 ? { message, ...data } : { message };
+    void mcpServer.server
+      .sendLoggingMessage({ level: MCP_LEVEL[level], data: payload })
+      .catch(() => {});
+  } catch {
+    // Never let logging errors propagate.
+  }
+}
+
+function log(level: LogLevel, message: string, data?: Record<string, unknown>): void {
+  if (!shouldLog(level)) return;
+  process.stderr.write(formatMessage(level, message, data) + "\n");
+  emitMcpLog(level, message, data);
+}
+
 export const logger = {
   debug(message: string, data?: Record<string, unknown>): void {
-    if (shouldLog("debug")) {
-      process.stderr.write(formatMessage("debug", message, data) + "\n");
-    }
+    log("debug", message, data);
   },
 
   info(message: string, data?: Record<string, unknown>): void {
-    if (shouldLog("info")) {
-      process.stderr.write(formatMessage("info", message, data) + "\n");
-    }
+    log("info", message, data);
   },
 
   warn(message: string, data?: Record<string, unknown>): void {
-    if (shouldLog("warn")) {
-      process.stderr.write(formatMessage("warn", message, data) + "\n");
-    }
+    log("warn", message, data);
   },
 
   error(message: string, data?: Record<string, unknown>): void {
-    if (shouldLog("error")) {
-      process.stderr.write(formatMessage("error", message, data) + "\n");
-    }
+    log("error", message, data);
   },
 
   setLevel(level: LogLevel): void {
@@ -61,4 +91,12 @@ export const logger = {
   getLevel(): LogLevel {
     return currentLevel;
   },
+
+  setMcpServer(server: McpServer | undefined): void {
+    mcpServer = server;
+  },
 } as const;
+
+export function setMcpServer(server: McpServer | undefined): void {
+  logger.setMcpServer(server);
+}

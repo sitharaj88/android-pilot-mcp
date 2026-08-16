@@ -5,6 +5,7 @@ import {
   validateSafeName,
   validateSdkPackage,
   validateShellCommand,
+  validateDeviceId,
   ValidationError,
 } from "../../src/utils/validation.js";
 
@@ -139,5 +140,40 @@ describe("validateShellCommand", () => {
   it("rejects commands exceeding max length", () => {
     const longCmd = "x".repeat(4097);
     expect(() => validateShellCommand(longCmd)).toThrow(ValidationError);
+  });
+});
+
+describe("validateDeviceId", () => {
+  it("accepts emulator serials", () => {
+    expect(validateDeviceId("emulator-5554")).toBe("emulator-5554");
+  });
+
+  it("accepts USB device serials", () => {
+    expect(validateDeviceId("R58M12ABCDE")).toBe("R58M12ABCDE");
+    expect(validateDeviceId("0123456789ABCDEF")).toBe("0123456789ABCDEF");
+  });
+
+  it("accepts network device IDs with host:port", () => {
+    expect(validateDeviceId("192.168.1.5:5555")).toBe("192.168.1.5:5555");
+  });
+
+  it("rejects empty strings", () => {
+    expect(() => validateDeviceId("")).toThrow(ValidationError);
+  });
+
+  it("rejects device IDs with shell metacharacters", () => {
+    expect(() => validateDeviceId("emulator-5554; rm -rf /")).toThrow(ValidationError);
+    expect(() => validateDeviceId("device$(id)")).toThrow(ValidationError);
+    expect(() => validateDeviceId("device with spaces")).toThrow(ValidationError);
+  });
+
+  it("rejects device IDs exceeding max length", () => {
+    const longId = "a".repeat(65);
+    expect(() => validateDeviceId(longId)).toThrow(ValidationError);
+  });
+
+  it("accepts device IDs at the max length boundary", () => {
+    const id = "a".repeat(64);
+    expect(validateDeviceId(id)).toBe(id);
   });
 });

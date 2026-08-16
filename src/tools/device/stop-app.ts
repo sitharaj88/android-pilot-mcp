@@ -1,22 +1,29 @@
 import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
-import { validatePackageName } from "../../utils/validation.js";
-import { textResponse, errorResponse } from "../../utils/response.js";
+import { validatePackageName, validateDeviceId } from "../../utils/validation.js";
+import { textResponse, errorResponse, ToolResponse } from "../../utils/response.js";
+import type { ToolExtra } from "./types.js";
 
 interface StopAppArgs {
   packageName: string;
   deviceId?: string;
 }
 
-export async function stopApp(args: StopAppArgs, env: Environment) {
+export async function stopApp(
+  args: StopAppArgs,
+  env: Environment,
+  extra?: ToolExtra,
+): Promise<ToolResponse> {
   const packageName = validatePackageName(args.packageName);
+  const deviceId = args.deviceId ? validateDeviceId(args.deviceId) : undefined;
 
   const adbArgs: string[] = [];
-  if (args.deviceId) adbArgs.push("-s", args.deviceId);
+  if (deviceId) adbArgs.push("-s", deviceId);
   adbArgs.push("shell", "am", "force-stop", packageName);
 
   const result = await executeCommand(env.adbPath, adbArgs, {
     timeout: 10_000,
+    signal: extra?.signal,
   });
 
   if (!result.success) {

@@ -3,9 +3,15 @@ title: Clear App Data
 description: Clear all data for an installed app, equivalent to clearing storage in settings.
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 ## Overview
 
 Wipe all app data including databases, shared preferences, and cache. The app will behave as if freshly installed.
+
+<Aside type="caution">
+  This is a destructive operation. On MCP clients that support elicitation, the server asks for confirmation before clearing data. On clients that don't support elicitation, it proceeds without prompting.
+</Aside>
 
 ## Parameters
 

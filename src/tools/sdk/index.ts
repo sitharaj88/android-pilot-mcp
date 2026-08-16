@@ -6,28 +6,47 @@ import { sdkList } from "./sdk-list.js";
 import { sdkInstall } from "./sdk-install.js";
 
 export function registerSdkTools(server: McpServer, env: Environment): void {
-  server.tool(
+  server.registerTool(
     "sdk_list",
-    "List installed or available Android SDK packages, system images, and build tools",
     {
-      installed: z
-        .boolean()
-        .default(true)
-        .describe("If true, show only installed packages. If false, show all available packages"),
+      title: "List SDK Packages",
+      description:
+        "List installed or available Android SDK packages, system images, and build tools",
+      inputSchema: {
+        installed: z
+          .boolean()
+          .default(true)
+          .describe("If true, show only installed packages. If false, show all available packages"),
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => sdkList(args, env)),
+    withErrorHandling(async (args, extra) => sdkList(args, env, extra)),
   );
 
-  server.tool(
+  server.registerTool(
     "sdk_install",
-    "Install Android SDK packages (system images, build tools, platforms, etc.)",
     {
-      packages: z
-        .array(z.string())
-        .describe(
-          "Package names to install, e.g. ['platforms;android-35', 'system-images;android-35;google_apis;arm64-v8a']",
-        ),
+      title: "Install SDK Packages",
+      description: "Install Android SDK packages (system images, build tools, platforms, etc.)",
+      inputSchema: {
+        packages: z
+          .array(z.string())
+          .describe(
+            "Package names to install, e.g. ['platforms;android-35', 'system-images;android-35;google_apis;arm64-v8a']",
+          ),
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
-    withErrorHandling(async (args) => sdkInstall(args, env)),
+    withErrorHandling(async (args, extra) => sdkInstall(args, env, server, extra)),
   );
 }

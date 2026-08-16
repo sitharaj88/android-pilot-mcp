@@ -4,6 +4,7 @@ import { executeCommand } from "../../executor.js";
 import { Environment } from "../../types.js";
 import { textResponse, errorResponse } from "../../utils/response.js";
 import { validateAbsolutePath } from "../../utils/validation.js";
+import type { ToolExtra } from "./extra.js";
 
 interface DependenciesArgs {
   projectDir: string;
@@ -11,7 +12,11 @@ interface DependenciesArgs {
   configuration?: string;
 }
 
-export async function showDependencies(args: DependenciesArgs, _env: Environment) {
+export async function showDependencies(
+  args: DependenciesArgs,
+  _env: Environment,
+  extra: ToolExtra,
+) {
   validateAbsolutePath(args.projectDir, "Project directory");
 
   const gradlew = join(args.projectDir, "gradlew");
@@ -29,6 +34,7 @@ export async function showDependencies(args: DependenciesArgs, _env: Environment
   const result = await executeCommand(gradlew, gradleArgs, {
     cwd: args.projectDir,
     timeout: 120_000,
+    signal: extra.signal,
   });
 
   if (result.success) {

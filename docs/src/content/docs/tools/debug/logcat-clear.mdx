@@ -1,0 +1,31 @@
+---
+title: Clear Logcat
+description: Clear the logcat buffer on a connected Android device.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+Clear the logcat buffer on a connected Android device (equivalent to `adb logcat -c`). Use this right before reproducing a bug so the next [`logcat_read`](/android-pilot-mcp/tools/debug/logcat/) only shows relevant output.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `deviceId` | `string` | No | — | Target device serial |
+
+## Examples
+
+> Clear the logcat buffer
+
+> Clear logcat on emulator-5554
+
+<Aside type="tip">
+  Always clear logcat before reproducing a bug. This eliminates noise from unrelated log entries that happened earlier.
+</Aside>
+
+## Related Tools
+
+- [Logcat](/android-pilot-mcp/tools/debug/logcat/) — Read logcat with tag, priority, time, and text filters
+- [Device Shell](/android-pilot-mcp/tools/debug/device-shell/) — Run `dumpsys` commands for deeper debugging

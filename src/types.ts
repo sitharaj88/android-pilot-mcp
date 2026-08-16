@@ -20,4 +20,5 @@ export interface ExecOptions {
   timeout?: number;
   maxBuffer?: number;
   env?: Record<string, string>;
+  signal?: AbortSignal;
 }

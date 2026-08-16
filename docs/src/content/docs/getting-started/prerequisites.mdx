@@ -22,7 +22,7 @@ import { Aside } from "@astrojs/starlight/components";
 | `ANDROID_HOME` | Yes* | Path to your Android SDK installation |
 | `JAVA_HOME` | Recommended | Path to your JDK installation (needed for Gradle builds) |
 
-\* If `ANDROID_HOME` is not set, the server also checks `ANDROID_SDK_ROOT` and the macOS default path `~/Library/Android/sdk`.
+\* If `ANDROID_HOME` is not set, the server also checks `ANDROID_SDK_ROOT` and the platform's default install location: `~/Library/Android/sdk` on macOS, `~/Android/Sdk` on Linux, or `%LOCALAPPDATA%\Android\Sdk` on Windows. If none of those exist, the server still starts, but tools that need the SDK will return an error until `ANDROID_HOME` is set — see [Environment](/android-pilot-mcp/reference/environment/) for details.
 
 <Aside type="tip">
   On macOS with Android Studio, `ANDROID_HOME` is typically `~/Library/Android/sdk`. Add to your shell profile:

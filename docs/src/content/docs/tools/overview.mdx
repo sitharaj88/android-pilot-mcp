@@ -41,7 +41,7 @@ Android Pilot MCP provides **39 tools** across **7 categories** for comprehensiv
 | Tool | Description |
 |------|-------------|
 | [`logcat_read`](/android-pilot-mcp/tools/debug/logcat/) | Read logcat with filtering |
-| [`logcat_clear`](/android-pilot-mcp/tools/debug/logcat/) | Clear the logcat buffer |
+| [`logcat_clear`](/android-pilot-mcp/tools/debug/logcat-clear/) | Clear the logcat buffer |
 | [`device_screenshot`](/android-pilot-mcp/tools/debug/screenshot/) | Capture a screenshot |
 | [`device_info`](/android-pilot-mcp/tools/debug/device-info/) | Get device details |
 | [`device_shell`](/android-pilot-mcp/tools/debug/device-shell/) | Execute a shell command |
@@ -78,3 +78,10 @@ Android Pilot MCP provides **39 tools** across **7 categories** for comprehensiv
 |------|-------------|
 | [`sdk_list`](/android-pilot-mcp/tools/sdk/sdk-list/) | List SDK packages |
 | [`sdk_install`](/android-pilot-mcp/tools/sdk/sdk-install/) | Install SDK packages |
+
+## Beyond Tools
+
+Every tool above is registered with a title and [tool annotations](/android-pilot-mcp/reference/architecture/) (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`), and several return structured output in addition to text. Android Pilot MCP also exposes:
+
+- **[MCP Resources](/android-pilot-mcp/reference/resources/)** — read-only live device state (`android://devices`, `android://avds`, `android://logcat/{deviceId}`, `android://uidump/{deviceId}`)
+- **[MCP Prompts](/android-pilot-mcp/reference/prompts/)** — ready-made multi-step workflows (`debug-crash`, `setup-emulator`, `install-and-test-apk`, `ui-inspect`, `performance-check`, `release-preflight`)
